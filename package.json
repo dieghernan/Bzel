@@ -4,18 +4,15 @@
         "pebble-clay": "^1.0.3"
     },
     "keywords": [],
-    "name": "sfera",
+    "name": "bzel",
     "pebble": {
         "capabilities": [
             "location",
             "configurable"
         ],
-        "displayName": "Sfera",
+        "displayName": "Bzel",
         "enableMultiJS": true,
         "messageKeys": [
-            "BackgroundColor",
-            "ForegroundColor",
-            "DotsColor",
             "WeatherUnit",
             "WeatherTemp",
             "WeatherCond",
@@ -23,15 +20,8 @@
             "DisplayDate",
             "DisplayTemp",
             "DisplayLoc",
-            "DisplayDots",
-            "DisplayBattery",
-            "BatteryColor",
             "UpSlider",
             "NightTheme",
-            "BackgroundColorNight",
-            "ForegroundColorNight",
-            "DotsColorNight",
-            "BatteryColorNight",
             "HourSunset",
             "HourSunrise",
             "WeatherProv",
@@ -39,10 +29,14 @@
             "PINPMKEY",
             "APIKEY_User",
             "ClockMode",
-            "HourColor",
+            "BezelColor",
             "MinColor",
-            "HourColorNight",
-            "MinColorNight"
+            "BackColor",
+            "HourColor",
+            "BezelColorN",
+            "MinColorN",
+            "BackColorN",
+            "HourColorN"
         ],
         "projectType": "native",
         "resources": {
@@ -106,7 +100,7 @@
         "targetPlatforms": [
             "chalk"
         ],
-        "uuid": "da914c0e-c89c-44ab-b557-158991f6366d",
+        "uuid": "88222d9f-96ba-4bf2-9454-6e1e33ce58fa",
         "watchapp": {
             "watchface": true
         }

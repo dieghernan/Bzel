@@ -7,24 +7,20 @@ static GFont FontHour, FontMinute, FontDate, FontTemp, FontCond, FontCiti, FontS
 char tempstring[44], condstring[44], citistring[44];
 static Window * s_window;
 static Layer * s_canvas;
-static int s_hours, s_minutes, s_weekday, s_day, s_battery_level, s_loop, s_countdown;
+static int s_hours, s_minutes, s_weekday, s_day, s_loop, s_countdown;
 //////Init Configuration///
 //Init Clay
 ClaySettings settings;
 // Initialize the default settings
 static void prv_default_settings(){
-  settings.BackgroundColor = GColorWhite;
-  settings.ForegroundColor = GColorOxfordBlue;
+  settings.BackColor=GColorWhite;
+  settings.BackColorN=GColorBlack;
+  settings.BezelColor=GColorBlue;
+  settings.BezelColorN=GColorYellow;
   settings.HourColor=GColorRed;
-  settings.MinColor=GColorOxfordBlue;
-  settings.HourColorNight=GColorOrange;
-  settings.MinColorNight=GColorWhite;
-  settings.DotsColor = GColorBlueMoon;
-  settings.BatteryColor = GColorPictonBlue;
-  settings.BackgroundColorNight = GColorPictonBlue;
-  settings.ForegroundColorNight = GColorOrange;
-  settings.DotsColorNight = GColorOrange;
-  settings.BatteryColorNight = GColorOrange;
+  settings.HourColorN=GColorOrange;
+  settings.MinColor=GColorRed;
+  settings.MinColor=GColorOrange;
   settings.WeatherUnit = false;
   settings.WeatherCond = 0;
   settings.UpSlider = 30;
@@ -33,8 +29,6 @@ static void prv_default_settings(){
   settings.DisplayLoc = false;
   settings.DisplayDate = false;
   settings.DisplayLoc = false;
-  settings.DisplayDots = false;
-  settings.DisplayBattery = false;
   settings.BTOn = true;
   settings.GPSOn = false;
   settings.NightTheme = true;
@@ -43,22 +37,6 @@ static void prv_default_settings(){
 }
 //////End Configuration///
 ///////////////////////////
-static int32_t get_angle_dot(int dot){
-  // Progress through 12 hours, out of 360 degrees
-  return (dot * 360) / 12;
-}
-static int get_angle_for_minutes(int minutes){
-  int floor5=minutes/5;
-  if (minutes%5 ==0){
-    return (floor5*5 * 360) / 60;
-  }
-  else
-    return (floor5*5 * 360) / 60+15;  
-};
-static int get_angle_for_battery(int battery){
-  int floor30 = (100 - battery) * 360 / 3000;
-  return (floor30 * 30);
-};
 static int hourtodraw(bool hourformat, int hournow){
   if (hourformat){
     return hournow;
@@ -73,28 +51,12 @@ static int hourtodraw(bool hourformat, int hournow){
     }
   }
 };
-static int xdaterect(bool is24, GRect hourect, GRect inner, GRect minrect){
-  if (!is24 && settings.ClockMode==1){
-    return hourect.origin.x - (inner.size.w / 2 - hourect.size.w / 2 - minrect.size.w / 2 + 3);
-  } 
-  else if(!is24 && settings.ClockMode==3){
-    return hourect.origin.x + hourect.size.w + 1+20;
-  }
-  else return  hourect.origin.x + hourect.size.w + 1;
-}
 static GColor ColorSelect(GColor ColorDay, GColor ColorNight){
   if (settings.NightTheme && settings.IsNightNow ){
     return ColorNight;
   } 
   else{
     return ColorDay;
-  }
-}
-static GTextAlignment AlignDate(bool is24){
-  if (!is24 && settings.ClockMode==1){
-    return GTextAlignmentRight;
-  } else{
-    return GTextAlignmentLeft;
   }
 }
 // Callback for js request
@@ -123,10 +85,10 @@ static void onreconnection(bool before, bool now){
 static void layer_update_proc(Layer * layer, GContext * ctx){
   //Create Background
   GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_fill_color(ctx, ColorSelect(settings.BackgroundColor, settings.BackgroundColorNight)); 
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.BezelColor, settings.BezelColorN)); 
   graphics_fill_rect(ctx, bounds, 0, GCornersAll);
   // Circle
-  graphics_context_set_fill_color(ctx, GColorPictonBlue);
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.BackColor, settings.BackColorN)); 
   graphics_fill_circle(ctx, GPoint(bounds.size.w/2, bounds.size.h/2), 60);
   //Create Rects
   GRect inner = grect_inset(bounds, GEdgeInsets(13));
@@ -148,6 +110,14 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
   char hour_display[10];
   int hourtorect = hourtodraw(clock_is_24h_style(), s_hours);
   snprintf(hour_display, sizeof(hour_display), "%02d", hourtorect);
+  char ampm[2];
+  if (!clock_is_24h_style()){ 
+    if (s_hours < 12){
+      strcpy(ampm, "am");
+    } else{
+      strcpy(ampm, "pm");
+    }
+  }
   //Min
   char min_display[10];
   snprintf(min_display, sizeof(min_display), "%02d", s_minutes);
@@ -175,7 +145,40 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
   else {
     strcpy(citi_display,citistring);
   }
+  //If it was disconnected fetch new values
+  onreconnection(settings.BTOn, connection_service_peek_pebble_app_connection());
+  // Update connection toggle
+  bluetooth_callback(connection_service_peek_pebble_app_connection());  
   //Start writing
+  //Min
+  graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorN));
+  graphics_draw_text(ctx, min_display, FontMinute, minrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);  
+  //Hour
+  graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorN)); 
+  graphics_draw_text(ctx, hour_display, FontHour,hourect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+  if (!clock_is_24h_style()){
+    graphics_draw_text(ctx, ampm, FontDate, ampmrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+  }
+  // If date
+  if (settings.DisplayDate){
+    if (clock_is_24h_style()){
+      graphics_draw_text(ctx, date_display, FontDate, daterect_r, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+    }
+    else {
+      graphics_draw_text(ctx, date_display, FontDate, daterect_l, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);      
+    }
+  }
+  // Warnings and weather
+  if (settings.DisplayLoc || settings.DisplayTemp){
+    if (!settings.BTOn || !settings.GPSOn){
+      graphics_draw_text(ctx, citi_display, FontSymbol , locrect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);            
+    }
+    else {
+      graphics_draw_text(ctx, citi_display, FontCiti , locrect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);                  
+      graphics_draw_text(ctx, temp_display, FontTemp, temprect, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
+      graphics_draw_text(ctx, cond_display, FontCond, condrect, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
+    }
+  }  
 }
 /////////////////////////////////////////
 ////Init: Handle Settings and Weather////
@@ -200,58 +203,39 @@ static void prv_inbox_received_handler(DictionaryIterator * iter, void * context
     strcpy(condstring, "");
     strcpy(citistring, "");
   }
-  // Background Color
-  Tuple * bg_color_t = dict_find(iter, MESSAGE_KEY_BackgroundColor);
+  // Colors
+  Tuple * bg_color_t = dict_find(iter, MESSAGE_KEY_BackColor);
   if (bg_color_t){
-    settings.BackgroundColor = GColorFromHEX(bg_color_t-> value -> int32);
+    settings.BackColor = GColorFromHEX(bg_color_t-> value -> int32);
   }
-  Tuple * nbg_color_t = dict_find(iter, MESSAGE_KEY_BackgroundColorNight);
+  Tuple * nbg_color_t = dict_find(iter, MESSAGE_KEY_BackColorN);
   if (nbg_color_t){
-    settings.BackgroundColorNight = GColorFromHEX(nbg_color_t -> value -> int32);
+    settings.BackColorN = GColorFromHEX(nbg_color_t-> value -> int32);
   }
-  // Foreground Color
-  Tuple * fg_color_t = dict_find(iter, MESSAGE_KEY_ForegroundColor);
-  if (fg_color_t){
-    settings.ForegroundColor = GColorFromHEX(fg_color_t -> value -> int32);
+  Tuple * be_color_t = dict_find(iter, MESSAGE_KEY_BezelColor);
+  if (be_color_t){
+    settings.BezelColor = GColorFromHEX(be_color_t-> value -> int32);
   }
-  Tuple * nfg_color_t = dict_find(iter, MESSAGE_KEY_ForegroundColorNight);
-  if (nfg_color_t){
-    settings.ForegroundColorNight = GColorFromHEX(nfg_color_t -> value -> int32);
+  Tuple * nbe_color_t = dict_find(iter, MESSAGE_KEY_BezelColorN);
+  if (nbe_color_t){
+    settings.BezelColorN = GColorFromHEX(nbe_color_t-> value -> int32);
   }
-  // Dots Color
-  Tuple * dt_color_t = dict_find(iter, MESSAGE_KEY_DotsColor);
-  if (dt_color_t){
-    settings.DotsColor = GColorFromHEX(dt_color_t -> value -> int32);
+  Tuple * ho_color_t = dict_find(iter, MESSAGE_KEY_HourColor);
+  if (ho_color_t){
+    settings.HourColor = GColorFromHEX(ho_color_t-> value -> int32);
   }
-  Tuple * ndt_color_t = dict_find(iter, MESSAGE_KEY_DotsColorNight);
-  if (ndt_color_t){
-    settings.DotsColorNight = GColorFromHEX(ndt_color_t -> value -> int32);
+  Tuple * nho_color_t = dict_find(iter, MESSAGE_KEY_HourColorN);
+  if (nho_color_t){
+    settings.HourColorN = GColorFromHEX(nho_color_t-> value -> int32);
   }
-  //Battery Color
-  Tuple * batt_color_t = dict_find(iter, MESSAGE_KEY_BatteryColor);
-  if (batt_color_t){
-    settings.BatteryColor = GColorFromHEX(batt_color_t -> value -> int32);
+  Tuple * mi_color_t = dict_find(iter, MESSAGE_KEY_MinColor);
+  if (mi_color_t){
+    settings.MinColor = GColorFromHEX(mi_color_t-> value -> int32);
   }
-  Tuple * nbatt_color_t = dict_find(iter, MESSAGE_KEY_BatteryColorNight);
-  if (nbatt_color_t){
-    settings.BatteryColorNight = GColorFromHEX(nbatt_color_t -> value -> int32);
-  }
-  Tuple * hour_color_t = dict_find(iter, MESSAGE_KEY_HourColor);
-  if (hour_color_t){
-    settings.HourColor = GColorFromHEX(hour_color_t -> value -> int32);
-  }
-  Tuple * nhour_color_t = dict_find(iter, MESSAGE_KEY_HourColorNight);
-  if (nhour_color_t){
-    settings.HourColorNight = GColorFromHEX(nhour_color_t -> value -> int32);
-  }
-  Tuple * min_color_t = dict_find(iter, MESSAGE_KEY_MinColor);
-  if (min_color_t){
-    settings.MinColor = GColorFromHEX(min_color_t -> value -> int32);
-  }
-  Tuple * nmin_color_t = dict_find(iter, MESSAGE_KEY_MinColorNight);
-  if (nmin_color_t){
-    settings.MinColorNight = GColorFromHEX(nmin_color_t -> value -> int32);
-  }
+  Tuple * nmi_color_t = dict_find(iter, MESSAGE_KEY_MinColorN);
+  if (nmi_color_t){
+    settings.MinColorN = GColorFromHEX(nmi_color_t-> value -> int32);
+  }  
   //Control of data from http
   // Weather Cond
   Tuple * wcond_t = dict_find(iter, MESSAGE_KEY_WeatherCond);
@@ -312,18 +296,6 @@ static void prv_inbox_received_handler(DictionaryIterator * iter, void * context
       settings.DisplayLoc = false;
     } else settings.DisplayLoc = true;
   }
-  Tuple * disdot_t = dict_find(iter, MESSAGE_KEY_DisplayDots);
-  if (disdot_t){
-    if (disdot_t -> value -> int32 == 0){
-      settings.DisplayDots = false;
-    } else settings.DisplayDots = true;
-  }
-  Tuple * disbatt_t = dict_find(iter, MESSAGE_KEY_DisplayBattery);
-  if (disbatt_t){
-    if (disbatt_t -> value -> int32 == 0){
-      settings.DisplayBattery = false;
-    } else settings.DisplayBattery = true;
-  }
   Tuple * disntheme_t = dict_find(iter, MESSAGE_KEY_NightTheme);
   if (disntheme_t){
     if (disntheme_t -> value -> int32 == 0){
@@ -338,7 +310,6 @@ static void prv_inbox_received_handler(DictionaryIterator * iter, void * context
   }
   //Update colors
   layer_mark_dirty(s_canvas);
-  window_set_background_color(s_window, ColorSelect( settings.BackgroundColor, settings.BackgroundColorNight));
   // Save the new settings to persistent storage
   prv_save_settings();
 }
@@ -363,7 +334,6 @@ static void window_unload(Window * window){
 }
 void main_window_push(){
   s_window = window_create();
-  window_set_background_color(s_window, ColorSelect(settings.BackgroundColor, settings.BackgroundColorNight));
   window_set_window_handlers(s_window, (WindowHandlers){
     .load = window_load,
     .unload = window_unload,
@@ -406,7 +376,6 @@ static void tick_handler(struct tm * time_now, TimeUnits changed){
     };
     // Change Color of background
     layer_mark_dirty(s_canvas);
-    window_set_background_color(s_window, ColorSelect( settings.BackgroundColor, settings.BackgroundColorNight));
   }
   // Get weather update every requested minutes and extra request 5 minutes earlier
   if (s_countdown == 0 || s_countdown == 5){
