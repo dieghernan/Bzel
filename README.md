@@ -2,7 +2,7 @@
 
 **Bzel** for Pebble Time Round intregates the bezel into your watchface. Display minutes as digits or as a moving dot.
 
-#### [Download from Pebble Appstore](https://apps.getpebble.com/applications/)
+#### [Download from Pebble Appstore](https://apps.getpebble.com/applications/59280895b67f9f43f80004c9)
 
 
 # Features
