@@ -1,4 +1,4 @@
-![Banner](https://raw.githubusercontent.com/dieghernan/Bzel/master/assets/BzelBanner.png)
+![Banner](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BannerBzel.png)
 
 **Bzel** for Pebble Time Round intregates the bezel into your watchface. Display minutes as digits or as a moving dot.
 
