@@ -55,7 +55,7 @@ Autotranslating of weekday supported for:
 [Master Key](https://www.pmkey.xyz) is a service for Pebble users. Get a unique PIN and add API Keys for your favorite online services. Please check [www.pmkey.xyz](https://www.pmkey.xyz) for more info.
 
 # License
-Developed under license [MIT](https://raw.githubusercontent.com/dieghernan/Sfera/master/LICENSE).
+Developed under license [MIT](https://raw.githubusercontent.com/dieghernan/Bzel/master/LICENSE).
 
 
 #### Made in Madrid, Spain
