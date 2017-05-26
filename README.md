@@ -34,7 +34,7 @@ Autotranslating of weekday supported for:
 * Italian
 
 # Screenshots
-![GIF](https://raw.githubusercontent.com/dieghernan/Bzel/master/assets/SferaGif.gif)
+![GIF](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BezelGif.gif)
 
 # Attributions
 ## Fonts: 
