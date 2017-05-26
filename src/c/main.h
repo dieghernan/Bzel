@@ -3,14 +3,14 @@
 #define SETTINGS_KEY 1
 // A structure containing our settings
 typedef struct ClaySettings {
-  GColor BezelColor;
-  GColor BezelColorN;
-  GColor MinColor;
-  GColor MinColorN;
-  GColor BackColor;
-  GColor BackColorN;
+  GColor BackgroundColor;
+  GColor ForegroundColor;
+  GColor BackgroundColorNight;
+  GColor ForegroundColorNight;
   GColor HourColor;
-  GColor HourColorN;
+  GColor HourColorNight;
+  GColor MinColor;
+  GColor MinColorNight;
   bool WeatherUnit;
   int WeatherCond;
   int UpSlider;

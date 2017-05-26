@@ -13,6 +13,8 @@
         "displayName": "Bzel",
         "enableMultiJS": true,
         "messageKeys": [
+            "BackgroundColor",
+            "ForegroundColor",
             "WeatherUnit",
             "WeatherTemp",
             "WeatherCond",
@@ -22,6 +24,8 @@
             "DisplayLoc",
             "UpSlider",
             "NightTheme",
+            "BackgroundColorNight",
+            "ForegroundColorNight",
             "HourSunset",
             "HourSunrise",
             "WeatherProv",
@@ -29,22 +33,18 @@
             "PINPMKEY",
             "APIKEY_User",
             "ClockMode",
-            "BezelColor",
-            "MinColor",
-            "BackColor",
             "HourColor",
-            "BezelColorN",
-            "MinColorN",
-            "BackColorN",
-            "HourColorN"
+            "MinColor",
+            "HourColorNight",
+            "MinColorNight"
         ],
         "projectType": "native",
         "resources": {
             "media": [
                 {
-                    "file": "images/sfera.png",
+                    "file": "images/bzel.png",
                     "menuIcon": true,
-                    "name": "sfera",
+                    "name": "bzel",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
@@ -76,7 +76,7 @@
                 {
                     "characterRegex": "[0-9:]",
                     "file": "fonts/Gotham Bold.otf",
-                    "name": "FONT_GBOLD_16",
+                    "name": "FONT_GBOLD_18",
                     "targetPlatforms": null,
                     "type": "font"
                 },
@@ -100,7 +100,7 @@
         "targetPlatforms": [
             "chalk"
         ],
-        "uuid": "88222d9f-96ba-4bf2-9454-6e1e33ce58fa",
+        "uuid": "91e7f0c2-4bcd-4828-aefc-be0f0ecfdd1f",
         "watchapp": {
             "watchface": true
         }

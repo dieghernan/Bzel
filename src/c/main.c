@@ -7,20 +7,20 @@ static GFont FontHour, FontMinute, FontDate, FontTemp, FontCond, FontCiti, FontS
 char tempstring[44], condstring[44], citistring[44];
 static Window * s_window;
 static Layer * s_canvas;
-static int s_hours, s_minutes, s_weekday, s_day, s_loop, s_countdown;
+static int s_hours, s_minutes, s_weekday, s_day,  s_loop, s_countdown;
 //////Init Configuration///
 //Init Clay
 ClaySettings settings;
 // Initialize the default settings
 static void prv_default_settings(){
-  settings.BackColor=GColorWhite;
-  settings.BackColorN=GColorBlack;
-  settings.BezelColor=GColorBlue;
-  settings.BezelColorN=GColorYellow;
-  settings.HourColor=GColorRed;
-  settings.HourColorN=GColorOrange;
-  settings.MinColor=GColorRed;
-  settings.MinColor=GColorOrange;
+  settings.BackgroundColor = GColorDarkGray;
+  settings.ForegroundColor = GColorWhite;
+  settings.HourColor=GColorWhite;
+  settings.MinColor=GColorDarkGray;
+  settings.BackgroundColorNight = GColorWhite;
+  settings.ForegroundColorNight = GColorDarkGray;
+  settings.HourColorNight=GColorDarkGray;
+  settings.MinColorNight=GColorWhite;
   settings.WeatherUnit = false;
   settings.WeatherCond = 0;
   settings.UpSlider = 30;
@@ -83,100 +83,99 @@ static void onreconnection(bool before, bool now){
 }
 //Update main layer
 static void layer_update_proc(Layer * layer, GContext * ctx){
-  //Create Background
-  GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_fill_color(ctx, ColorSelect(settings.BezelColor, settings.BezelColorN)); 
-  graphics_fill_rect(ctx, bounds, 0, GCornersAll);
-  // Circle
-  graphics_context_set_fill_color(ctx, ColorSelect(settings.BackColor, settings.BackColorN)); 
-  graphics_fill_circle(ctx, GPoint(bounds.size.w/2, bounds.size.h/2), 60);
-  //Create Rects
-  GRect inner = grect_inset(bounds, GEdgeInsets(13));
-  GRect hourect = grect_centered_from_polar(GRect(bounds.size.h / 2, bounds.size.w / 2, 0, 0),GOvalScaleModeFitCircle,0,GSize(50, 42));  
-  GRect minrect = grect_centered_from_polar(inner, GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(360*s_minutes/60), GSize(28, 20));
-  GRect temprect = GRect(hourect.origin.x - 10,hourect.origin.y + hourect.size.h + 1,
-                         hourect.size.w / 2 + 9,(inner.size.h / 2 - hourect.size.h / 2) / 2);
-  GRect condrect = GRect(hourect.origin.x + hourect.size.w / 2 + 1,hourect.origin.y + hourect.size.h + 1,
-                         hourect.size.w / 2 - 1,(inner.size.h / 2 - hourect.size.h / 2) / 2);
-  GRect locrect = GRect(hourect.origin.x - 17 ,hourect.origin.y - 20 ,hourect.size.w + 34 ,25 );
-  GRect daterect_r = GRect( hourect.origin.x + hourect.size.w + 1,hourect.origin.y + 8,
-                           inner.size.w / 2 - hourect.size.w / 2 - minrect.size.w / 2 + 2,hourect.size.h );
-  GRect daterect_l = GRect( hourect.origin.x - daterect_r.size.w-1,daterect_r.origin.y,
-                              daterect_r.size.w,daterect_r.size.h );
-  GRect ampmrect = GRect(hourect.origin.x + hourect.size.w + 1,hourect.origin.y +hourect.size.h - 20,
-                         daterect_r.size.w,8);
-  //Write Final Chars
-  //Hour
-  char hour_display[10];
-  int hourtorect = hourtodraw(clock_is_24h_style(), s_hours);
-  snprintf(hour_display, sizeof(hour_display), "%02d", hourtorect);
-  char ampm[2];
-  if (!clock_is_24h_style()){ 
-    if (s_hours < 12){
-      strcpy(ampm, "am");
-    } else{
-      strcpy(ampm, "pm");
-    }
-  }
-  //Min
-  char min_display[10];
-  snprintf(min_display, sizeof(min_display), "%02d", s_minutes);
-  //Temp
-  char temp_display[90];
-  snprintf(temp_display, sizeof(temp_display), "%s", tempstring);
-  //Condition
-  char cond_display[90];
-  snprintf(cond_display, sizeof(cond_display), "%s", condstring);
-  //Date
-  char date_display[90];
-  const char * sys_locale = i18n_get_system_locale();
-  fetchwday(s_weekday, sys_locale, date_display);
-  char convertday[4];
-  snprintf(convertday, sizeof(convertday), " %02d", s_day);
-  strcat(date_display, convertday);
-  //City and warnings
-  char citi_display[90];
-  if (!settings.BTOn){
-    strcpy(citi_display,"a");
-  }
-  else if (!settings.GPSOn){
-    strcpy(citi_display,"b");
-  }
-  else {
-    strcpy(citi_display,citistring);
-  }
+//BT Handlers
   //If it was disconnected fetch new values
   onreconnection(settings.BTOn, connection_service_peek_pebble_app_connection());
   // Update connection toggle
-  bluetooth_callback(connection_service_peek_pebble_app_connection());  
-  //Start writing
-  //Min
-  graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorN));
-  graphics_draw_text(ctx, min_display, FontMinute, minrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);  
-  //Hour
-  graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorN)); 
-  graphics_draw_text(ctx, hour_display, FontHour,hourect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+  bluetooth_callback(connection_service_peek_pebble_app_connection());
+  // Prepare canvas
+  //Create Background
+  GRect bounds = layer_get_bounds(layer);
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.BackgroundColor, settings.BackgroundColorNight));
+  graphics_fill_rect(ctx, bounds, 0, GCornersAll);
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+  graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 32, DEG_TO_TRIGANGLE(0), DEG_TO_TRIGANGLE(360));
+  GRect inner = grect_inset(bounds, GEdgeInsets(15));
+  // Hour
+  graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
+  GRect hour_rect=grect_centered_from_polar(GRect(bounds.size.w/2, bounds.size.h/2, 0, 0), GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(0), GSize(50, 42));
+  char hournow[4];
+  int hourtorect = hourtodraw(clock_is_24h_style(), s_hours);
+  snprintf(hournow, sizeof(hournow), "%02d", hourtorect);
+  graphics_draw_text(ctx, hournow, FontHour, hour_rect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+  // am or pm
   if (!clock_is_24h_style()){
-    graphics_draw_text(ctx, ampm, FontDate, ampmrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+    char ampm[2];
+    if (s_hours < 12){
+      strcpy(ampm, "am");
+    } 
+    else{
+      strcpy(ampm, "pm");
+    }
+    GRect ampmrect = GRect(hour_rect.origin.x + hour_rect.size.w + 1,
+                           hour_rect.origin.y +hour_rect.size.h - 20,
+                           30,
+                           8);
+    graphics_draw_text(ctx, ampm, FontDate, ampmrect, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    
+  }  
+  // Minute
+  if (settings.ClockMode==1){
+    graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    char minnow[4];  
+    snprintf(minnow, sizeof(minnow), "%02d",s_minutes);
+    graphics_draw_text(ctx, minnow, FontMinute, 
+                       grect_centered_from_polar(inner,GOvalScaleModeFitCircle,DEG_TO_TRIGANGLE(360*s_minutes/60),GSize(32, 22)),
+                       GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
   }
-  // If date
+  else if (settings.ClockMode==2){
+    //Dot
+    graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    GPoint dotpos=gpoint_from_polar(grect_inset(inner, GEdgeInsets(2)), GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(360*s_minutes/60));
+    graphics_fill_circle(ctx, dotpos, 7);    
+  }  
+  graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
+  // Date
   if (settings.DisplayDate){
+    char datenow[44];
+    const char * sys_locale = i18n_get_system_locale();
+    fetchwday(s_weekday, sys_locale, datenow);
+    char convertday[4];
+    snprintf(convertday, sizeof(convertday), " %02d", s_day);
+    strcat(datenow, convertday);
+    graphics_context_set_fill_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
+    GRect date_rect_right=GRect(hour_rect.origin.x+hour_rect.size.w+1, hour_rect.origin.y+8, 30, hour_rect.size.h);
+    GRect date_rect_left=GRect(hour_rect.origin.x-date_rect_right.size.w-1, date_rect_right.origin.y, 
+                               date_rect_right.size.w, date_rect_right.size.h);
     if (clock_is_24h_style()){
-      graphics_draw_text(ctx, date_display, FontDate, daterect_r, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+      graphics_draw_text(ctx, datenow, FontDate, date_rect_right, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
     }
     else {
-      graphics_draw_text(ctx, date_display, FontDate, daterect_l, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);      
+      graphics_draw_text(ctx, datenow, FontDate, date_rect_left, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
     }
   }
-  // Warnings and weather
+  // Complications
+  GRect loc_rect=GRect(hour_rect.origin.x-17, hour_rect.origin.y-20, hour_rect.size.w+34, 25);
+  GRect temprect = GRect(hour_rect.origin.x - 10,hour_rect.origin.y + hour_rect.size.h + 1,
+                         hour_rect.size.w / 2 + 9,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
+  GRect condrect = GRect(hour_rect.origin.x + hour_rect.size.w / 2 + 1,temprect.origin.y,
+                         hour_rect.size.w / 2 - 1,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
+  
   if (settings.DisplayLoc || settings.DisplayTemp){
-    if (!settings.BTOn || !settings.GPSOn){
-      graphics_draw_text(ctx, citi_display, FontSymbol , locrect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);            
+    if (!settings.BTOn){
+      graphics_draw_text(ctx, "a", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
     }
-    else {
-      graphics_draw_text(ctx, citi_display, FontCiti , locrect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);                  
-      graphics_draw_text(ctx, temp_display, FontTemp, temprect, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
-      graphics_draw_text(ctx, cond_display, FontCond, condrect, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
+    else if (!settings.GPSOn){
+      graphics_draw_text(ctx, "b", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+    }
+    else{
+      if (settings.DisplayLoc){
+        graphics_draw_text(ctx, citistring, FontCiti, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);        
+      }
+      if (settings.DisplayTemp){
+        graphics_draw_text(ctx, tempstring, FontTemp, temprect, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+        graphics_draw_text(ctx, condstring, FontCond, condrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+      }
     }
   }  
 }
@@ -203,39 +202,40 @@ static void prv_inbox_received_handler(DictionaryIterator * iter, void * context
     strcpy(condstring, "");
     strcpy(citistring, "");
   }
-  // Colors
-  Tuple * bg_color_t = dict_find(iter, MESSAGE_KEY_BackColor);
+  // Background Color
+  Tuple * bg_color_t = dict_find(iter, MESSAGE_KEY_BackgroundColor);
   if (bg_color_t){
-    settings.BackColor = GColorFromHEX(bg_color_t-> value -> int32);
+    settings.BackgroundColor = GColorFromHEX(bg_color_t-> value -> int32);
   }
-  Tuple * nbg_color_t = dict_find(iter, MESSAGE_KEY_BackColorN);
+  Tuple * nbg_color_t = dict_find(iter, MESSAGE_KEY_BackgroundColorNight);
   if (nbg_color_t){
-    settings.BackColorN = GColorFromHEX(nbg_color_t-> value -> int32);
+    settings.BackgroundColorNight = GColorFromHEX(nbg_color_t -> value -> int32);
   }
-  Tuple * be_color_t = dict_find(iter, MESSAGE_KEY_BezelColor);
-  if (be_color_t){
-    settings.BezelColor = GColorFromHEX(be_color_t-> value -> int32);
+  // Foreground Color
+  Tuple * fg_color_t = dict_find(iter, MESSAGE_KEY_ForegroundColor);
+  if (fg_color_t){
+    settings.ForegroundColor = GColorFromHEX(fg_color_t -> value -> int32);
   }
-  Tuple * nbe_color_t = dict_find(iter, MESSAGE_KEY_BezelColorN);
-  if (nbe_color_t){
-    settings.BezelColorN = GColorFromHEX(nbe_color_t-> value -> int32);
+  Tuple * nfg_color_t = dict_find(iter, MESSAGE_KEY_ForegroundColorNight);
+  if (nfg_color_t){
+    settings.ForegroundColorNight = GColorFromHEX(nfg_color_t -> value -> int32);
   }
-  Tuple * ho_color_t = dict_find(iter, MESSAGE_KEY_HourColor);
-  if (ho_color_t){
-    settings.HourColor = GColorFromHEX(ho_color_t-> value -> int32);
+  Tuple * hour_color_t = dict_find(iter, MESSAGE_KEY_HourColor);
+  if (hour_color_t){
+    settings.HourColor = GColorFromHEX(hour_color_t -> value -> int32);
   }
-  Tuple * nho_color_t = dict_find(iter, MESSAGE_KEY_HourColorN);
-  if (nho_color_t){
-    settings.HourColorN = GColorFromHEX(nho_color_t-> value -> int32);
+  Tuple * nhour_color_t = dict_find(iter, MESSAGE_KEY_HourColorNight);
+  if (nhour_color_t){
+    settings.HourColorNight = GColorFromHEX(nhour_color_t -> value -> int32);
   }
-  Tuple * mi_color_t = dict_find(iter, MESSAGE_KEY_MinColor);
-  if (mi_color_t){
-    settings.MinColor = GColorFromHEX(mi_color_t-> value -> int32);
+  Tuple * min_color_t = dict_find(iter, MESSAGE_KEY_MinColor);
+  if (min_color_t){
+    settings.MinColor = GColorFromHEX(min_color_t -> value -> int32);
   }
-  Tuple * nmi_color_t = dict_find(iter, MESSAGE_KEY_MinColorN);
-  if (nmi_color_t){
-    settings.MinColorN = GColorFromHEX(nmi_color_t-> value -> int32);
-  }  
+  Tuple * nmin_color_t = dict_find(iter, MESSAGE_KEY_MinColorNight);
+  if (nmin_color_t){
+    settings.MinColorNight = GColorFromHEX(nmin_color_t -> value -> int32);
+  }
   //Control of data from http
   // Weather Cond
   Tuple * wcond_t = dict_find(iter, MESSAGE_KEY_WeatherCond);
@@ -310,6 +310,7 @@ static void prv_inbox_received_handler(DictionaryIterator * iter, void * context
   }
   //Update colors
   layer_mark_dirty(s_canvas);
+  window_set_background_color(s_window, ColorSelect( settings.BackgroundColor, settings.BackgroundColorNight));
   // Save the new settings to persistent storage
   prv_save_settings();
 }
@@ -334,6 +335,7 @@ static void window_unload(Window * window){
 }
 void main_window_push(){
   s_window = window_create();
+  window_set_background_color(s_window, ColorSelect(settings.BackgroundColor, settings.BackgroundColorNight));
   window_set_window_handlers(s_window, (WindowHandlers){
     .load = window_load,
     .unload = window_unload,
@@ -376,6 +378,7 @@ static void tick_handler(struct tm * time_now, TimeUnits changed){
     };
     // Change Color of background
     layer_mark_dirty(s_canvas);
+    window_set_background_color(s_window, ColorSelect( settings.BackgroundColor, settings.BackgroundColorNight));
   }
   // Get weather update every requested minutes and extra request 5 minutes earlier
   if (s_countdown == 0 || s_countdown == 5){
@@ -417,7 +420,7 @@ static void init(){
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   // Load Fonts
   FontHour = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GBOLD_34));
-  FontMinute = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GBOLD_16));
+  FontMinute = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GBOLD_18));
   FontDate = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GLIGHT_12));
   FontTemp = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GLIGHT_14));
   FontCond = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_WICON_22));

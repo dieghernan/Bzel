@@ -14,17 +14,17 @@ module.exports = [
       {
         "type": "select",
         "messageKey": "ClockMode",
-        "label": "Minute display",
+        "label": "Minute Mode",
         "defaultValue": "1",
         "options": [
           {
-            "label": "Number",
+            "label": "Digital",
             "value": "1"
           },
           {
             "label": "Dot",
             "value": "2"
-          }
+          },       
         ]
       },
       {
@@ -32,31 +32,31 @@ module.exports = [
         "messageKey": "DisplayDate",
         "label": "Date",
         "defaultValue": false
+      },     
+      {
+        "type": "color",
+        "messageKey": "BackgroundColor",
+        "defaultValue": "0x555555",
+        "label": "Background"
       },
       {
         "type": "color",
-        "messageKey": "BezelColor",
+        "messageKey": "ForegroundColor",
         "defaultValue": "0xFFFFFF",
-        "label": "Bezel Background"
-      },
-      {
-        "type": "color",
-        "messageKey": "MinColor",
-        "defaultValue": "0x000055",
-        "label": "Minute Color"
-      },
-      {
-        "type": "color",
-        "messageKey": "BackColor",
-        "defaultValue": "0xFF0000",
-        "label": "Main Background"
+        "label": "Bezel"
       },
       {
         "type": "color",
         "messageKey": "HourColor",
-        "defaultValue": "0x55AAFF",
-        "label": "Hour Color"
-      },     
+        "defaultValue": "0xFFFFFF",
+        "label": "Hour and Complications"
+      },
+      {
+        "type": "color",
+        "messageKey": "MinColor",
+        "defaultValue": "0x555555",
+        "label": "Minute"
+      },    
       {"type": "section",
        "items": [
          {
@@ -73,28 +73,28 @@ module.exports = [
          },
          {
            "type": "color",
-           "messageKey": "BezelColorN",
+           "messageKey": "BackgroundColorNight",
            "defaultValue": "0xFFFFFF",
-           "label": "Bezel Background"
+           "label": "Background"
          },
          {
            "type": "color",
-           "messageKey": "MinColorN",
-           "defaultValue": "0x000055",
-           "label": "Minute Color"
+           "messageKey": "ForegroundColorNight",
+           "defaultValue": "0x555555",
+           "label": "Bezel"
          },
          {
            "type": "color",
-           "messageKey": "BackColorN",
-           "defaultValue": "0xFF0000",
-           "label": "Main Background"
+           "messageKey": "HourColorNight",
+           "defaultValue": "0x555555",
+           "label": "Hour and Complications"
          },
          {
            "type": "color",
-           "messageKey": "HourColorN",
-           "defaultValue": "0x55AAFF",
-           "label": "Hour Color"
-         },         
+           "messageKey": "MinColorNight",
+           "defaultValue": "0xFFFFFF",
+           "label": "Minute"
+         }       
        ]
       }
     ]
