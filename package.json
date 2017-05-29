@@ -4,13 +4,13 @@
         "pebble-clay": "^1.0.3"
     },
     "keywords": [],
-    "name": "bzels_endbez",
+    "name": "bzels_beta",
     "pebble": {
         "capabilities": [
             "location",
             "configurable"
         ],
-        "displayName": "bzels_endbez",
+        "displayName": "bzels_beta",
         "enableMultiJS": true,
         "messageKeys": [
             "BackgroundColor",
@@ -99,13 +99,15 @@
         },
         "sdkVersion": "3",
         "targetPlatforms": [
+            "aplite",
             "basalt",
-            "chalk"
+            "chalk",
+            "diorite"
         ],
-        "uuid": "d5d722e9-00bc-42ba-b1ce-eb222d6ad3af",
+        "uuid": "eafcc6b0-0a8c-4069-9743-aa758ca2638a",
         "watchapp": {
             "watchface": true
         }
     },
-    "version": "1.1.0"
+    "version": "2.0.0"
 }
