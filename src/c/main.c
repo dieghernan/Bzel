@@ -34,6 +34,7 @@ static void prv_default_settings(){
   settings.NightTheme = true;
   settings.IsNightNow = false;
   settings.ClockMode=1;
+  settings.WeatherLayout=1;
 }
 //////End Configuration///
 ///////////////////////////
@@ -155,29 +156,54 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
     }
   }
   // Complications
+  //Settings by Default  
   GRect loc_rect=GRect(hour_rect.origin.x-17, hour_rect.origin.y-20, hour_rect.size.w+34, 25);
   GRect temprect = GRect(hour_rect.origin.x - 10,hour_rect.origin.y + hour_rect.size.h + 1,
                          hour_rect.size.w / 2 + 9,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
   GRect condrect = GRect(hour_rect.origin.x + hour_rect.size.w / 2 + 1,temprect.origin.y,
                          hour_rect.size.w / 2 - 1,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
-  
+  //Alt location
+  GRect loc_rect_alt=GRect(loc_rect.origin.x, hour_rect.origin.y+hour_rect.size.h-5, loc_rect.size.w, loc_rect.size.h);
+  GRect temprect_alt=GRect(temprect.origin.x, hour_rect.origin.y-temprect.size.h+5, temprect.size.w, temprect.size.h);
+  GRect condrect_alt=GRect(condrect.origin.x, temprect_alt.origin.y, condrect.size.w, condrect.size.h);
   if (settings.DisplayLoc || settings.DisplayTemp){
     if (!settings.BTOn){
-      graphics_draw_text(ctx, "a", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+      if (settings.WeatherLayout==1){
+        graphics_draw_text(ctx, "a", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+      }
+      else {
+        graphics_draw_text(ctx, "a", FontSymbol, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+      }
     }
     else if (!settings.GPSOn){
-      graphics_draw_text(ctx, "b", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+      if (settings.WeatherLayout==1){
+        graphics_draw_text(ctx, "b", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+      }
+      else {
+        graphics_draw_text(ctx, "b", FontSymbol, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+      }
     }
     else{
       if (settings.DisplayLoc){
-        graphics_draw_text(ctx, citistring, FontCiti, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);        
+        if (settings.WeatherLayout==1){
+          graphics_draw_text(ctx, citistring, FontCiti, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);        
+        }
+        else {
+          graphics_draw_text(ctx, citistring, FontCiti, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL); 
+        }
       }
       if (settings.DisplayTemp){
-        graphics_draw_text(ctx, tempstring, FontTemp, temprect, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
-        graphics_draw_text(ctx, condstring, FontCond, condrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+        if (settings.WeatherLayout==1){
+          graphics_draw_text(ctx, tempstring, FontTemp, temprect, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+          graphics_draw_text(ctx, condstring, FontCond, condrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+        }
+        else {
+          graphics_draw_text(ctx, tempstring, FontTemp, temprect_alt, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+          graphics_draw_text(ctx, condstring, FontCond, condrect_alt, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);          
+        }
       }
-    }
-  }  
+    }  
+  }
 }
 /////////////////////////////////////////
 ////Init: Handle Settings and Weather////
@@ -307,6 +333,10 @@ static void prv_inbox_received_handler(DictionaryIterator * iter, void * context
   if (clockmode_t){
     settings.ClockMode=atoi(clockmode_t->value->cstring);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Mode %d",settings.ClockMode);
+  }
+  Tuple * layout_t = dict_find(iter, MESSAGE_KEY_WeatherLayout);
+  if (layout_t){
+    settings.WeatherLayout=atoi(layout_t->value->cstring);
   }
   //Update colors
   layer_mark_dirty(s_canvas);
