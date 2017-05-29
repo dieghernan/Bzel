@@ -118,7 +118,22 @@ module.exports = [
         "label": "Weather",
         "defaultValue": false
       },
-      {
+      {"type": "select",
+       "messageKey": "WeatherLayout",
+       "defaultValue": "1",
+       "label": "Layout",
+       "options": [
+         {
+           "label": "T: Location - B: Weather",
+           "value": "1"
+         },
+         {
+           "label": "T: Weather - B: Location",
+           "value": "2"
+         },        
+       ]        
+         },
+         {
         "type": "toggle",
         "messageKey": "WeatherUnit",
         "label": "Temperature in Fahrenheit",
@@ -193,7 +208,7 @@ module.exports = [
       },
       {
       "type": "heading",
-      "defaultValue": "version v1.0",
+      "defaultValue": "version v1.1",
       "size":6
       },
       {

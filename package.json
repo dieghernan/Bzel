@@ -4,13 +4,13 @@
         "pebble-clay": "^1.0.3"
     },
     "keywords": [],
-    "name": "bzel",
+    "name": "bzels_end",
     "pebble": {
         "capabilities": [
             "location",
             "configurable"
         ],
-        "displayName": "Bzel",
+        "displayName": "Bzels_end",
         "enableMultiJS": true,
         "messageKeys": [
             "BackgroundColor",
@@ -36,7 +36,8 @@
             "HourColor",
             "MinColor",
             "HourColorNight",
-            "MinColorNight"
+            "MinColorNight",
+            "WeatherLayout"
         ],
         "projectType": "native",
         "resources": {
@@ -98,12 +99,13 @@
         },
         "sdkVersion": "3",
         "targetPlatforms": [
+            "basalt",
             "chalk"
         ],
-        "uuid": "91e7f0c2-4bcd-4828-aefc-be0f0ecfdd1f",
+        "uuid": "8dda8e4a-4b3c-4aab-9c28-d5360b6b879c",
         "watchapp": {
             "watchface": true
         }
     },
-    "version": "1.0.0"
+    "version": "1.1.0"
 }
