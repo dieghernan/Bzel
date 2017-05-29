@@ -34,10 +34,10 @@ Autotranslating of weekday supported for:
 * Italian
 
 # Future developments
-- [] Location for weather and loc
-- [] Square support
-- [] New Minute Mode: Bezel
-- [] Steps
+- [ ] Location for weather and loc
+- [ ] Square support
+- [ ] New Minute Mode: Bezel
+- [ ] Steps
 
 # Screenshots
 ![GIF](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BezelGif.gif)
