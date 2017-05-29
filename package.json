@@ -4,13 +4,13 @@
         "pebble-clay": "^1.0.3"
     },
     "keywords": [],
-    "name": "bzels_end",
+    "name": "bzels_endbez",
     "pebble": {
         "capabilities": [
             "location",
             "configurable"
         ],
-        "displayName": "Bzels_end",
+        "displayName": "bzels_endbez",
         "enableMultiJS": true,
         "messageKeys": [
             "BackgroundColor",
@@ -102,7 +102,7 @@
             "basalt",
             "chalk"
         ],
-        "uuid": "8dda8e4a-4b3c-4aab-9c28-d5360b6b879c",
+        "uuid": "d5d722e9-00bc-42ba-b1ce-eb222d6ad3af",
         "watchapp": {
             "watchface": true
         }

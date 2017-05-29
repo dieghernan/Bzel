@@ -24,7 +24,10 @@ module.exports = [
           {
             "label": "Dot",
             "value": "2"
-          },       
+          },
+          {"label":"Bezel",
+           "value":"3"            
+          }
         ]
       },
       {

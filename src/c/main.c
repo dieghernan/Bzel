@@ -126,6 +126,38 @@ static void onreconnection(bool before, bool now){
     request_watchjs();
   }
 }
+static void bezelmodeforsquare(GContext * ctx,GRect ref,int min, int x, int y){
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+  int wmin=32;
+  int hmin=22;
+  if (min<=7){
+    graphics_fill_rect(ctx, GRect(x, 0, ref.size.w-x, 22),
+                       0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(ref.size.w-wmin, 0, wmin, ref.size.h),0,GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, ref.size.w, hmin), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);
+  }
+  else if (min<=22){
+    graphics_fill_rect(ctx, GRect(ref.size.w-wmin, y, wmin, ref.size.h-y),0,GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, ref.size.w, hmin), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);
+  }
+  else if (min<=37){
+    graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, x, hmin), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);    
+  }
+  else if (min<=52){
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, y), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);    
+  }
+  else {
+    graphics_fill_rect(ctx, GRect(x, 0, ref.size.w/2-x, hmin), 0, GCornerNone);       
+  }  
+}
+
 static void developingforsquare(Layer * layer, GContext * ctx){
   // Prepare canvas
   //Create Background
@@ -174,16 +206,23 @@ static void developingforsquare(Layer * layer, GContext * ctx){
     GPoint dotpos=GPoint(xtodraw, ytodraw);
     graphics_fill_circle(ctx, dotpos, 7);    
   }
+  else if (settings.ClockMode==3){
+    bezelmodeforsquare(ctx, bounds, s_minutes, xtodraw, ytodraw);
+  }
    // Date
   if (settings.DisplayDate){
-    graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    if (s_minutes<18 && settings.ClockMode==3){
+      graphics_context_set_text_color(ctx, ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+    }
+    else {
+      graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    }
     char datenow[44];
     const char * sys_locale = i18n_get_system_locale();
     fetchwday(s_weekday, sys_locale, datenow);
     char convertday[4];
     snprintf(convertday, sizeof(convertday), " %02d", s_day);
     strcat(datenow, convertday);
-    graphics_context_set_fill_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
     GRect date_rect_right=GRect(inner.origin.x+inner.size.w+4, hour_rect.origin.y+8, 30, hour_rect.size.h);
     GRect date_rect_left=GRect(inner.origin.x-date_rect_right.size.w-4, date_rect_right.origin.y, 
                                date_rect_right.size.w, date_rect_right.size.h);
@@ -292,7 +331,11 @@ static void developingforround(Layer * layer, GContext * ctx){
     graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
     GPoint dotpos=gpoint_from_polar(grect_inset(inner, GEdgeInsets(2)), GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(360*s_minutes/60));
     graphics_fill_circle(ctx, dotpos, 7);    
-  }  
+  }
+  else if (settings.ClockMode==3){
+    graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 32, DEG_TO_TRIGANGLE(360*s_minutes/60), DEG_TO_TRIGANGLE(360));
+  }
   graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
   // Date
   if (settings.DisplayDate){
