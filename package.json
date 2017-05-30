@@ -4,13 +4,13 @@
         "pebble-clay": "^1.0.3"
     },
     "keywords": [],
-    "name": "bzels_beta",
+    "name": "bzels_beta2",
     "pebble": {
         "capabilities": [
             "location",
             "configurable"
         ],
-        "displayName": "bzels_beta",
+        "displayName": "bzels_beta2",
         "enableMultiJS": true,
         "messageKeys": [
             "BackgroundColor",
@@ -104,7 +104,7 @@
             "chalk",
             "diorite"
         ],
-        "uuid": "eafcc6b0-0a8c-4069-9743-aa758ca2638a",
+        "uuid": "7d621aa4-6b60-4921-9c07-bd73a382e9db",
         "watchapp": {
             "watchface": true
         }

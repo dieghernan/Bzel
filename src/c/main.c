@@ -127,31 +127,30 @@ static void onreconnection(bool before, bool now){
   }
 }
 static void bezelmodeforsquare(GContext * ctx,GRect ref,int min, int x, int y){
-  graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));  
   int wmin=32;
   int hmin=22;
   if (min<=7){
-    graphics_fill_rect(ctx, GRect(x, 0, ref.size.w-x, 22),
-                       0, GCornerNone);
-    graphics_fill_rect(ctx, GRect(ref.size.w-wmin, 0, wmin, ref.size.h),0,GCornerNone);
+    graphics_fill_rect(ctx, GRect(x, 0, ref.size.w-x, 22),0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(ref.size.w-wmin, hmin, wmin, ref.size.h-hmin),0,GCornerNone);
     graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, ref.size.w, hmin), 0, GCornerNone);
     graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h), 0, GCornerNone);
     graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);
   }
   else if (min<=22){
     graphics_fill_rect(ctx, GRect(ref.size.w-wmin, y, wmin, ref.size.h-y),0,GCornerNone);
-    graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, ref.size.w, hmin), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, ref.size.w-wmin, hmin), 0, GCornerNone);
     graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h), 0, GCornerNone);
     graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);
   }
   else if (min<=37){
     graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, x, hmin), 0, GCornerNone);
-    graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h-hmin), 0, GCornerNone);
     graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);    
   }
   else if (min<=52){
     graphics_fill_rect(ctx, GRect(0, 0, wmin, y), 0, GCornerNone);
-    graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);    
+    graphics_fill_rect(ctx, GRect(wmin, 0, ref.size.w/2-wmin, hmin), 0, GCornerNone);    
   }
   else {
     graphics_fill_rect(ctx, GRect(x, 0, ref.size.w/2-x, hmin), 0, GCornerNone);       
@@ -334,7 +333,7 @@ static void developingforround(Layer * layer, GContext * ctx){
   }
   else if (settings.ClockMode==3){
     graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
-    graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 32, DEG_TO_TRIGANGLE(360*s_minutes/60), DEG_TO_TRIGANGLE(360));
+    graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 33, DEG_TO_TRIGANGLE(360*s_minutes/60), DEG_TO_TRIGANGLE(360));
   }
   graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
   // Date
@@ -362,7 +361,7 @@ static void developingforround(Layer * layer, GContext * ctx){
   GRect temprect = GRect(hour_rect.origin.x - 10,hour_rect.origin.y + hour_rect.size.h + 1,
                          hour_rect.size.w / 2 + 9,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
   GRect condrect = GRect(hour_rect.origin.x + hour_rect.size.w / 2 + 1,temprect.origin.y,
-                         hour_rect.size.w / 2 - 1,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
+                         hour_rect.size.w / 2 +5,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
   //Alt location
   GRect loc_rect_alt=GRect(loc_rect.origin.x, hour_rect.origin.y+hour_rect.size.h-5, loc_rect.size.w, loc_rect.size.h);
   GRect temprect_alt=GRect(temprect.origin.x, hour_rect.origin.y-temprect.size.h+5, temprect.size.w, temprect.size.h);
