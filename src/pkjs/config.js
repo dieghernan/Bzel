@@ -24,7 +24,10 @@ module.exports = [
           {
             "label": "Dot",
             "value": "2"
-          },       
+          },
+          {"label":"Bezel",
+           "value":"3"            
+          }
         ]
       },
       {
@@ -32,31 +35,72 @@ module.exports = [
         "messageKey": "DisplayDate",
         "label": "Date",
         "defaultValue": false
-      },     
+      },
+      
+      // Color
       {
         "type": "color",
+        "capabilities": ["COLOR"],
         "messageKey": "BackgroundColor",
         "defaultValue": "0x555555",
-        "label": "Background"
+        "label": "Background",
       },
       {
         "type": "color",
+        "capabilities": ["COLOR"],
         "messageKey": "ForegroundColor",
         "defaultValue": "0xFFFFFF",
         "label": "Bezel"
       },
       {
         "type": "color",
+        "capabilities": ["COLOR"],
         "messageKey": "HourColor",
         "defaultValue": "0xFFFFFF",
         "label": "Hour and Complications"
       },
       {
         "type": "color",
+        "capabilities": ["COLOR"],
         "messageKey": "MinColor",
         "defaultValue": "0x555555",
         "label": "Minute"
-      },    
+      },
+      // End Color
+      //Starting BW
+      {
+        "type": "color",
+        "capabilities": ["NOT_COLOR"],
+        "messageKey": "BackgroundColor",
+        "defaultValue": "0x555555",
+        "label": "Background",
+        "layout": "BLACK_WHITE"
+      },
+      {
+        "type": "color",
+        "capabilities": ["NOT_COLOR"],
+        "messageKey": "ForegroundColor",
+        "defaultValue": "0xFFFFFF",
+        "label": "Bezel",
+        "layout": "BLACK_WHITE"
+      },
+      {
+        "type": "color",
+        "capabilities": ["NOT_COLOR"],
+        "messageKey": "HourColor",
+        "defaultValue": "0xFFFFFF",
+        "label": "Hour and Complications",
+        "layout": "BLACK_WHITE"
+      },
+      {
+        "type": "color",
+        "capabilities": ["NOT_COLOR"],
+        "messageKey": "MinColor",
+        "defaultValue": "0x555555",
+        "label": "Minute",
+        "layout": "BLACK_WHITE"
+      },      
+      
       {"type": "section",
        "items": [
          {
@@ -64,6 +108,7 @@ module.exports = [
            "defaultValue": "Night Theme",
            "size":4
          } ,
+         // Color
          {
            "type": "toggle",
            "messageKey": "NightTheme",
@@ -73,28 +118,65 @@ module.exports = [
          },
          {
            "type": "color",
+           "capabilities": ["COLOR"],
            "messageKey": "BackgroundColorNight",
            "defaultValue": "0xFFFFFF",
            "label": "Background"
          },
          {
            "type": "color",
+           "capabilities": ["COLOR"],
            "messageKey": "ForegroundColorNight",
            "defaultValue": "0x555555",
            "label": "Bezel"
          },
          {
            "type": "color",
+           "capabilities": ["COLOR"],
            "messageKey": "HourColorNight",
            "defaultValue": "0x555555",
            "label": "Hour and Complications"
          },
          {
            "type": "color",
+           "capabilities": ["COLOR"],
            "messageKey": "MinColorNight",
            "defaultValue": "0xFFFFFF",
            "label": "Minute"
-         }       
+         },
+         //BW
+         {
+           "type": "color",
+           "capabilities": ["NOT_COLOR"],
+           "messageKey": "BackgroundColorNight",
+           "defaultValue": "0xFFFFFF",
+           "label": "Background",
+           "layout": "BLACK_WHITE"
+         },
+         {
+           "type": "color",
+           "capabilities": ["NOT_COLOR"],
+           "messageKey": "ForegroundColorNight",
+           "defaultValue": "0x555555",
+           "label": "Bezel",
+           "layout": "BLACK_WHITE"
+         },
+         {
+           "type": "color",
+           "capabilities": ["NOT_COLOR"],
+           "messageKey": "HourColorNight",
+           "defaultValue": "0x555555",
+           "label": "Hour and Complications",
+           "layout": "BLACK_WHITE"
+         },
+         {
+           "type": "color",
+           "capabilities": ["NOT_COLOR"],
+           "messageKey": "MinColorNight",
+           "defaultValue": "0xFFFFFF",
+           "label": "Minute",
+           "layout": "BLACK_WHITE"
+         },
        ]
       }
     ]
@@ -104,42 +186,101 @@ module.exports = [
     "items": [
       {
         "type": "heading",
-        "defaultValue": "Connection settings"
-      },
-      {
-        "type": "toggle",
-        "messageKey": "DisplayLoc",
-        "label": "Location",
-        "defaultValue": false
-      },
-      {
-        "type": "toggle",
-        "messageKey": "DisplayTemp",
-        "label": "Weather",
-        "defaultValue": false
+        "defaultValue": "Complications"
       },
       {"type": "select",
-       "messageKey": "WeatherLayout",
-       "defaultValue": "1",
-       "label": "Layout",
+       "messageKey": "TopComp",
+       "defaultValue": "0",
+       "capabilities": ["HEALTH"],
+       "label": "Top",
        "options": [
          {
-           "label": "T: Location - B: Weather",
+           "label": "None",
+           "value": "0"
+         },
+         {
+           "label": "Location",
            "value": "1"
          },
          {
-           "label": "T: Weather - B: Location",
+           "label": "Weather",
            "value": "2"
-         },        
+         },{
+           "label": "Steps Today",
+           "value": "3"
+         },
        ]        
          },
+         {"type": "select",
+       "messageKey": "TopComp",
+       "defaultValue": "0",
+       "capabilities": ["NOT_HEALTH"],
+       "label": "Top",
+       "options": [
+         {
+           "label": "None",
+           "value": "0"
+         },
+         {
+           "label": "Location",
+           "value": "1"
+         },
+         {
+           "label": "Weather",
+           "value": "2"
+         }, 
+       ]        
+         },         
+         {"type": "select",
+         "capabilities": ["HEALTH"],
+       "messageKey": "BottomComp",
+       "defaultValue": "0",
+       "label": "Bottom",
+       "options": [
+         {
+           "label": "None",
+           "value": "0"
+         },
+         {
+           "label": "Location",
+           "value": "1"
+         },
+         {
+           "label": "Weather",
+           "value": "2"
+         },
+         {
+           "label": "Steps Today",
+           "value": "3"
+         }, 
+       ]        
+         },
+         {"type": "select",
+         "capabilities": ["NOT_HEALTH"],
+       "messageKey": "BottomComp",
+       "defaultValue": "0",
+       "label": "Bottom",
+       "options": [
+         {
+           "label": "None",
+           "value": "0"
+         },
+         {
+           "label": "Location",
+           "value": "1"
+         },
+         {
+           "label": "Weather",
+           "value": "2"
+         },
+       ]        
+         },        
          {
         "type": "toggle",
         "messageKey": "WeatherUnit",
         "label": "Temperature in Fahrenheit",
         "defaultValue": false,
-        "description": "Applicable if Weather toggle is active"
-      },
+         },
       {
         "type": "select",
         "messageKey": "WeatherProv",
@@ -208,7 +349,7 @@ module.exports = [
       },
       {
       "type": "heading",
-      "defaultValue": "version v1.1",
+      "defaultValue": "version v2.0",
       "size":6
       },
       {

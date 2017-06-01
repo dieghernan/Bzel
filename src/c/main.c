@@ -7,7 +7,8 @@ static GFont FontHour, FontMinute, FontDate, FontTemp, FontCond, FontCiti, FontS
 char tempstring[44], condstring[44], citistring[44];
 static Window * s_window;
 static Layer * s_canvas;
-static int s_hours, s_minutes, s_weekday, s_day,  s_loop, s_countdown;
+static int s_hours, s_minutes, s_weekday, s_day,  s_loop, s_countdown, s_steps;
+static bool Health=false;
 //////Init Configuration///
 //Init Clay
 ClaySettings settings;
@@ -34,10 +35,61 @@ static void prv_default_settings(){
   settings.NightTheme = true;
   settings.IsNightNow = false;
   settings.ClockMode=1;
-  settings.WeatherLayout=1;
+  settings.TopComp=0;
+  settings.BottomComp=0;
 }
 //////End Configuration///
 ///////////////////////////
+static void health_handler(HealthEventType event, void *context) {
+  if (event == HealthEventMovementUpdate) {
+    // display the step count
+    s_steps=(int)health_service_sum_today(HealthMetricStepCount);
+  }
+}
+static int x_min(int min, GRect ref, int wmin){
+  int x_ref=ref.origin.x;
+  int w_ref=ref.size.w;
+  int respect=10;
+  int math;
+  if (min<=7){
+    math=(w_ref/2-wmin/2-respect/2)*min/7;
+    return x_ref+w_ref/2+math;
+  }
+  else if (min<=22){
+    return x_ref+w_ref-wmin/2;
+  }
+  else if (min<=37){
+    math=(w_ref-wmin-respect)*(37-min)/(37-23);
+    return x_ref+wmin/2+respect/2+math;
+  } 
+  else if (min<=52){
+    return x_ref+wmin/2;
+  }
+  else {
+    math=(w_ref/2-wmin/2-respect/2)*(min-53)/(60-53);
+    return x_ref+wmin/2+respect/2+math;      
+  }
+};
+static int y_min (int min, GRect ref, int hmin){
+  int y_ref=ref.origin.y;
+  int h_ref=ref.size.h;
+  int respect=10;
+  int math;
+  if (min <=7 || min>=53){
+    return y_ref+hmin/2;    
+  }
+  else if (min>=23 && min<=37){
+    return y_ref+h_ref-hmin/2;
+  }
+  else if (min<=22){
+    math=(h_ref-hmin-respect)*(min-8)/(22-8);
+    return y_ref+hmin/2+respect/2+math;
+  }
+  else {
+    math=(h_ref-hmin-respect)*(52-min)/(52-38);
+    return y_ref+hmin/2+respect/2+math;    
+  }  
+}
 static int hourtodraw(bool hourformat, int hournow){
   if (hourformat){
     return hournow;
@@ -82,13 +134,182 @@ static void onreconnection(bool before, bool now){
     request_watchjs();
   }
 }
-//Update main layer
-static void layer_update_proc(Layer * layer, GContext * ctx){
-//BT Handlers
-  //If it was disconnected fetch new values
-  onreconnection(settings.BTOn, connection_service_peek_pebble_app_connection());
-  // Update connection toggle
-  bluetooth_callback(connection_service_peek_pebble_app_connection());
+static void bezelmodeforsquare(GContext * ctx,GRect ref,int min, int x, int y){
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));  
+  int wmin=32;
+  int hmin=22;
+  if (min<=7){
+    graphics_fill_rect(ctx, GRect(x, 0, ref.size.w-x, 22),0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(ref.size.w-wmin, hmin, wmin, ref.size.h-hmin),0,GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, ref.size.w, hmin), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);
+  }
+  else if (min<=22){
+    graphics_fill_rect(ctx, GRect(ref.size.w-wmin, y, wmin, ref.size.h-y),0,GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, ref.size.w-wmin, hmin), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);
+  }
+  else if (min<=37){
+    graphics_fill_rect(ctx, GRect(0, ref.size.h-hmin, x, hmin), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, ref.size.h-hmin), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, 0, ref.size.w/2, hmin), 0, GCornerNone);    
+  }
+  else if (min<=52){
+    graphics_fill_rect(ctx, GRect(0, 0, wmin, y), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(wmin, 0, ref.size.w/2-wmin, hmin), 0, GCornerNone);    
+  }
+  else {
+    graphics_fill_rect(ctx, GRect(x, 0, ref.size.w/2-x, hmin), 0, GCornerNone);       
+  }  
+}
+
+static void developingforsquare(Layer * layer, GContext * ctx){
+  // Prepare canvas
+  //Create Background
+  GRect bounds = layer_get_bounds(layer);  
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+  graphics_fill_rect(ctx, bounds, 0, GCornersAll);
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.BackgroundColor, settings.BackgroundColorNight));
+  GRect inner=grect_inset(bounds, GEdgeInsets(22,32,22,32));
+  graphics_fill_rect(ctx, inner, 0, GCornersAll);
+  // Hour
+  graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
+  GRect hour_rect=grect_centered_from_polar(GRect(bounds.origin.x+bounds.size.w/2, bounds.origin.y+bounds.size.h/2, 0, 0), GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(0), GSize(50, 42));
+  char hournow[4];
+  int hourtorect = hourtodraw(clock_is_24h_style(), s_hours);
+  snprintf(hournow, sizeof(hournow), "%02d", hourtorect);
+  graphics_draw_text(ctx, hournow, FontHour, hour_rect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+  //Dev:Place ampm
+    if (!clock_is_24h_style()){
+    char ampm[2];
+    if (s_hours < 12){
+      strcpy(ampm, "am");
+    } 
+    else{
+      strcpy(ampm, "pm");
+    }
+      GRect ampmrect = GRect(hour_rect.origin.x + hour_rect.size.w-30,
+                             hour_rect.origin.y +hour_rect.size.h-10,
+                             30,
+                             18);
+      graphics_draw_text(ctx, ampm, FontDate, ampmrect, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
+    }  
+  // Minute
+  int xtodraw=x_min(s_minutes, bounds, 32);
+  int ytodraw=y_min(s_minutes, bounds, 22);
+  if (settings.ClockMode==1){
+    graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    char minnow[4];  
+    snprintf(minnow, sizeof(minnow), "%02d",s_minutes);
+    graphics_draw_text(ctx, minnow, FontMinute, 
+                       GRect(xtodraw-32/2, ytodraw-22/2, 32, 22),
+                       GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+    
+  }
+  else if (settings.ClockMode==2){
+    graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    GPoint dotpos=GPoint(xtodraw, ytodraw);
+    graphics_fill_circle(ctx, dotpos, 7);    
+  }
+  else if (settings.ClockMode==3){
+    bezelmodeforsquare(ctx, bounds, s_minutes, xtodraw, ytodraw);
+  }
+   // Date
+  if (settings.DisplayDate){
+    if (s_minutes<18 && settings.ClockMode==3){
+      graphics_context_set_text_color(ctx, ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+    }
+    else {
+      graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    }
+    char datenow[44];
+    const char * sys_locale = i18n_get_system_locale();
+    fetchwday(s_weekday, sys_locale, datenow);
+    char convertday[4];
+    snprintf(convertday, sizeof(convertday), " %02d", s_day);
+    strcat(datenow, convertday);
+    GRect date_rect_right=GRect(inner.origin.x+inner.size.w+4, hour_rect.origin.y+8, 30, hour_rect.size.h);
+    GRect date_rect_left=GRect(inner.origin.x-date_rect_right.size.w-4, date_rect_right.origin.y, 
+                               date_rect_right.size.w, date_rect_right.size.h);
+    if (s_minutes>12 && s_minutes<18){
+      graphics_draw_text(ctx, datenow, FontDate, date_rect_left, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
+    }
+    else {
+      graphics_draw_text(ctx, datenow, FontDate, date_rect_right, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);      
+    }
+  }
+  // Complications
+  //Settings by Default 
+  graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
+  GRect loc_rect=GRect(inner.origin.x+4, hour_rect.origin.y-35, inner.size.w-8, 35);
+  GRect temprect = GRect(hour_rect.origin.x - 10,inner.origin.y+inner.size.h-30,
+                         hour_rect.size.w / 2 + 9,20);
+  GRect condrect = GRect(hour_rect.origin.x + hour_rect.size.w / 2 + 1,temprect.origin.y,
+                         inner.size.w / 2 - 1,30);
+  GRect iconstep=GRect(loc_rect.origin.x, loc_rect.origin.y, 20, loc_rect.size.h);
+  GRect numstep=GRect(iconstep.origin.x+iconstep.size.w,iconstep.origin.y,loc_rect.size.w-iconstep.size.w,iconstep.size.h);
+  // Alt location
+  GRect loc_rect_alt=GRect(loc_rect.origin.x, temprect.origin.y, loc_rect.size.w, loc_rect.size.h-5);
+  GRect temprect_alt=GRect(temprect.origin.x, hour_rect.origin.y-condrect.size.h, temprect.size.w, temprect.size.h);
+  GRect condrect_alt=GRect(condrect.origin.x, temprect_alt.origin.y, condrect.size.w, condrect.size.h);
+    GRect iconstep_alt=GRect(loc_rect_alt.origin.x, loc_rect_alt.origin.y, 20, loc_rect_alt.size.h);
+  GRect numstep_alt=GRect(iconstep_alt.origin.x+iconstep_alt.size.w,iconstep_alt.origin.y,loc_rect_alt.size.w-iconstep_alt.size.w,iconstep_alt.size.h);
+    if (settings.TopComp>=0 || settings.BottomComp>=0){
+    if (!settings.BTOn){
+      graphics_draw_text(ctx, "a", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+    }
+    else {
+      if (settings.TopComp==3 || settings.BottomComp==3){
+        if (Health){
+          char stepstring[8];
+          snprintf(stepstring, sizeof(stepstring), "%d", s_steps);
+          if (settings.TopComp==3){
+            graphics_draw_text(ctx, "c", FontSymbol, iconstep, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+            graphics_draw_text(ctx, stepstring, FontTemp , numstep, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+          }
+          else if (settings.BottomComp==3){
+            graphics_draw_text(ctx, "c", FontSymbol, iconstep_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+            graphics_draw_text(ctx, stepstring, FontTemp , numstep_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);      
+          }
+        }
+      }
+      if (settings.DisplayTemp || settings.DisplayLoc){
+        if (!settings.GPSOn){
+          if (settings.TopComp==3){
+            graphics_draw_text(ctx, "b", FontSymbol, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);            
+          }
+          else {
+            graphics_draw_text(ctx, "b", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+          }
+        }
+        else{
+          if (settings.DisplayLoc){
+            if (settings.TopComp==1){
+              graphics_draw_text(ctx, citistring, FontCiti, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);        
+            }
+            else if (settings.BottomComp==1){
+              graphics_draw_text(ctx, citistring, FontCiti, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL); 
+            }
+          }
+          if (settings.DisplayTemp){
+            if (settings.BottomComp==2){
+              graphics_draw_text(ctx, tempstring, FontTemp, temprect, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+              graphics_draw_text(ctx, condstring, FontCond, condrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+            }
+            else if (settings.TopComp==2){
+              graphics_draw_text(ctx, tempstring, FontTemp, temprect_alt, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+              graphics_draw_text(ctx, condstring, FontCond, condrect_alt, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);          
+            }
+          }
+        }
+      }
+    }
+  }
+ 
+}
+static void developingforround(Layer * layer, GContext * ctx){
   // Prepare canvas
   //Create Background
   GRect bounds = layer_get_bounds(layer);
@@ -134,7 +355,11 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
     graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
     GPoint dotpos=gpoint_from_polar(grect_inset(inner, GEdgeInsets(2)), GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(360*s_minutes/60));
     graphics_fill_circle(ctx, dotpos, 7);    
-  }  
+  }
+  else if (settings.ClockMode==3){
+    graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
+    graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 33, DEG_TO_TRIGANGLE(360*s_minutes/60), DEG_TO_TRIGANGLE(360));
+  }
   graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
   // Date
   if (settings.DisplayDate){
@@ -161,48 +386,80 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
   GRect temprect = GRect(hour_rect.origin.x - 10,hour_rect.origin.y + hour_rect.size.h + 1,
                          hour_rect.size.w / 2 + 9,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
   GRect condrect = GRect(hour_rect.origin.x + hour_rect.size.w / 2 + 1,temprect.origin.y,
-                         hour_rect.size.w / 2 - 1,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
-  //Alt location
+                         hour_rect.size.w / 2 +5,(inner.size.h / 2 - hour_rect.size.h / 2) / 2);
+  GRect iconstep=GRect(loc_rect.origin.x, loc_rect.origin.y, 20, loc_rect.size.h);
+   //Alt location
   GRect loc_rect_alt=GRect(loc_rect.origin.x, hour_rect.origin.y+hour_rect.size.h-5, loc_rect.size.w, loc_rect.size.h);
   GRect temprect_alt=GRect(temprect.origin.x, hour_rect.origin.y-temprect.size.h+5, temprect.size.w, temprect.size.h);
   GRect condrect_alt=GRect(condrect.origin.x, temprect_alt.origin.y, condrect.size.w, condrect.size.h);
-  if (settings.DisplayLoc || settings.DisplayTemp){
+  GRect iconstep_alt=GRect(loc_rect_alt.origin.x, loc_rect_alt.origin.y, 20, loc_rect_alt.size.h);
+  if (settings.TopComp>=0 || settings.BottomComp>=0){
     if (!settings.BTOn){
-      if (settings.WeatherLayout==1){
-        graphics_draw_text(ctx, "a", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
-      }
-      else {
-        graphics_draw_text(ctx, "a", FontSymbol, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
-      }
+      graphics_draw_text(ctx, "a", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
     }
-    else if (!settings.GPSOn){
-      if (settings.WeatherLayout==1){
-        graphics_draw_text(ctx, "b", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+    else {
+      if (settings.TopComp==3 || settings.BottomComp==3){
+        if (Health){
+          char stepstring[8];
+          snprintf(stepstring, sizeof(stepstring), "%d", s_steps);
+          if (settings.TopComp==3){
+            graphics_draw_text(ctx, "c", FontSymbol, iconstep, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+            graphics_draw_text(ctx, stepstring, FontTemp , loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+          }
+          else if (settings.BottomComp==3){
+            graphics_draw_text(ctx, "c", FontSymbol, iconstep_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+            graphics_draw_text(ctx, stepstring, FontTemp , loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);      
+          }
+        }
       }
-      else {
-        graphics_draw_text(ctx, "b", FontSymbol, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
-      }
-    }
-    else{
-      if (settings.DisplayLoc){
-        if (settings.WeatherLayout==1){
-          graphics_draw_text(ctx, citistring, FontCiti, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);        
+      if (settings.DisplayTemp || settings.DisplayLoc){
+        if (!settings.GPSOn){  
+          if (settings.TopComp==3){
+            graphics_draw_text(ctx, "b", FontSymbol, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);            
+          }
+          else {
+            graphics_draw_text(ctx, "b", FontSymbol, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+          }        
         }
         else {
-          graphics_draw_text(ctx, citistring, FontCiti, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL); 
+          if (settings.DisplayLoc){
+            if (settings.TopComp==1){
+              graphics_draw_text(ctx, citistring, FontCiti, loc_rect, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);        
+            }
+            else if (settings.BottomComp==1){
+              graphics_draw_text(ctx, citistring, FontCiti, loc_rect_alt, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL); 
+            }
+          }
+          if (settings.DisplayTemp){
+            if (settings.BottomComp==2){
+              graphics_draw_text(ctx, tempstring, FontTemp, temprect, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+              graphics_draw_text(ctx, condstring, FontCond, condrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+            }
+            else if (settings.TopComp==2){
+              graphics_draw_text(ctx, tempstring, FontTemp, temprect_alt, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+              graphics_draw_text(ctx, condstring, FontCond, condrect_alt, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);          
+            }
+          }
         }
       }
-      if (settings.DisplayTemp){
-        if (settings.WeatherLayout==1){
-          graphics_draw_text(ctx, tempstring, FontTemp, temprect, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
-          graphics_draw_text(ctx, condstring, FontCond, condrect, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-        }
-        else {
-          graphics_draw_text(ctx, tempstring, FontTemp, temprect_alt, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
-          graphics_draw_text(ctx, condstring, FontCond, condrect_alt, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);          
-        }
-      }
-    }  
+    }
+  }
+}
+//Update main layer
+static void layer_update_proc(Layer * layer, GContext * ctx){
+//BT Handlers
+  //If it was disconnected fetch new values
+  onreconnection(settings.BTOn, connection_service_peek_pebble_app_connection());
+  // Update connection toggle
+  bluetooth_callback(connection_service_peek_pebble_app_connection());  
+  int Round=PBL_IF_ROUND_ELSE(1, 0);
+  if (Round==0){
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Square Pebble");
+    developingforsquare(layer, ctx);
+  }
+  else {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Round Pebble");
+    developingforround(layer, ctx);
   }
 }
 /////////////////////////////////////////
@@ -310,18 +567,26 @@ static void prv_inbox_received_handler(DictionaryIterator * iter, void * context
       settings.DisplayDate = false;
     } else settings.DisplayDate = true;
   }
-  Tuple * distemp_t = dict_find(iter, MESSAGE_KEY_DisplayTemp);
-  if (distemp_t){
-    if (distemp_t -> value -> int32 == 0){
-      settings.DisplayTemp = false;
-    } else settings.DisplayTemp = true;
+  Tuple * topcomp_t=dict_find(iter, MESSAGE_KEY_TopComp);
+  if (topcomp_t){
+     settings.TopComp=atoi(topcomp_t->value->cstring);
   }
-  Tuple * disloc_t = dict_find(iter, MESSAGE_KEY_DisplayLoc);
-  if (disloc_t){
-    if (disloc_t -> value -> int32 == 0){
-      settings.DisplayLoc = false;
-    } else settings.DisplayLoc = true;
+  Tuple * bottomcomp_t=dict_find(iter, MESSAGE_KEY_BottomComp);
+  if (bottomcomp_t){
+     settings.BottomComp=atoi(bottomcomp_t->value->cstring);
+  }  
+  if (settings.TopComp==1 || settings.BottomComp==1){
+    settings.DisplayLoc=true;
   }
+  else {
+    settings.DisplayLoc=false;
+  }
+    if (settings.TopComp==2 || settings.BottomComp==2){
+    settings.DisplayTemp=true;
+  }
+  else {
+    settings.DisplayTemp=false;
+  }  
   Tuple * disntheme_t = dict_find(iter, MESSAGE_KEY_NightTheme);
   if (disntheme_t){
     if (disntheme_t -> value -> int32 == 0){
@@ -333,11 +598,7 @@ static void prv_inbox_received_handler(DictionaryIterator * iter, void * context
   if (clockmode_t){
     settings.ClockMode=atoi(clockmode_t->value->cstring);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Mode %d",settings.ClockMode);
-  }
-  Tuple * layout_t = dict_find(iter, MESSAGE_KEY_WeatherLayout);
-  if (layout_t){
-    settings.WeatherLayout=atoi(layout_t->value->cstring);
-  }
+  } 
   //Update colors
   layer_mark_dirty(s_canvas);
   window_set_background_color(s_window, ColorSelect( settings.BackgroundColor, settings.BackgroundColorNight));
@@ -447,7 +708,7 @@ static void init(){
   s_weekday=t->tm_wday;
   //Register and open
   app_message_register_inbox_received(prv_inbox_received_handler);
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  app_message_open(512, 512);
   // Load Fonts
   FontHour = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GBOLD_34));
   FontMinute = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GBOLD_18));
@@ -462,10 +723,36 @@ static void init(){
   connection_service_subscribe((ConnectionHandlers){
     .pebble_app_connection_handler = bluetooth_callback
   });
+  int aux=PBL_IF_HEALTH_ELSE(1, 0);
+  if (aux==1){
+    Health=true;
+  }
+  else {
+    Health=false;
+  }
+   // subscribe to health events
+  if (Health){
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Try health!");
+    if(health_service_events_subscribe(health_handler, NULL)) {
+      // force initial steps display
+      health_handler(HealthEventMovementUpdate, NULL);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Health OK");
+    } 
+    else {    
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Health not available!");
+    }
+  }
+  else {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Health not available!");
+  }
 }
 static void deinit(){
   tick_timer_service_unsubscribe();
-  app_message_deregister_callbacks(); //Destroy the callbacks for clean up
+  app_message_deregister_callbacks();
+  if (Health){
+    health_service_events_unsubscribe();
+  }
+  //Destroy the callbacks for clean up
 }
 int main(){
   init();

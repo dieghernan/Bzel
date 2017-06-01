@@ -8,7 +8,8 @@
     "pebble": {
         "capabilities": [
             "location",
-            "configurable"
+            "configurable",
+            "health"
         ],
         "displayName": "Bzel",
         "enableMultiJS": true,
@@ -20,8 +21,6 @@
             "WeatherCond",
             "NameLocation",
             "DisplayDate",
-            "DisplayTemp",
-            "DisplayLoc",
             "UpSlider",
             "NightTheme",
             "BackgroundColorNight",
@@ -37,11 +36,19 @@
             "MinColor",
             "HourColorNight",
             "MinColorNight",
-            "WeatherLayout"
+            "TopComp",
+            "BottomComp"
         ],
         "projectType": "native",
         "resources": {
             "media": [
+                {
+                    "characterRegex": "[a-z]",
+                    "file": "fonts/ConnSymbol_2.ttf",
+                    "name": "FONT_SYMBOL_16",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
                 {
                     "file": "images/bzel.png",
                     "menuIcon": true,
@@ -87,24 +94,20 @@
                     "name": "FONT_GBOLD_18",
                     "targetPlatforms": null,
                     "type": "font"
-                },
-                {
-                    "characterRegex": "[a-b]",
-                    "file": "fonts/ConnSymbol.ttf",
-                    "name": "FONT_SYMBOL_16",
-                    "targetPlatforms": null,
-                    "type": "font"
                 }
             ]
         },
         "sdkVersion": "3",
         "targetPlatforms": [
-            "chalk"
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
         ],
         "uuid": "91e7f0c2-4bcd-4828-aefc-be0f0ecfdd1f",
         "watchapp": {
             "watchface": true
         }
     },
-    "version": "1.1.0"
+    "version": "2.0.0"
 }
