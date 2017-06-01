@@ -1,6 +1,6 @@
 ![Banner](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BannerBzel.png)
 
-**Bzel** intregates the bezel into your watchface. Display minutes as digits or as a moving dot.
+**Bzel** intregates the bezel into your watchface. Display minutes as digits, as a moving dot or as a fill in the bezel.
 
 #### [Download from Pebble Appstore](https://apps.getpebble.com/applications/59280895b67f9f43f80004c9)
 
