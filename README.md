@@ -1,6 +1,6 @@
 ![Banner](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BannerBzel.png)
 
-**Bzel** for Pebble Time Round intregates the bezel into your watchface. Display minutes as digits or as a moving dot.
+**Bzel** intregates the bezel into your watchface. Display minutes as digits or as a moving dot.
 
 #### [Download from Pebble Appstore](https://apps.getpebble.com/applications/59280895b67f9f43f80004c9)
 
@@ -9,9 +9,11 @@
 * Clock mode:
    * Digital: Minute display based on analog movement
    * Dot: Moving dot as minute marker
+   * Bezel: A bar moving around the bezel as minute marker
 * Autodetection of 12h/24h based on your watch settings
 
 ## Take your pick
+ * Pebble Health: Display daily steps.
  * Date - Get the weekday based on the language set on your Pebble.
  * Weather: Current conditions on °c or °f.
  * Choose your weather provider:
@@ -34,13 +36,16 @@ Autotranslating of weekday supported for:
 * Italian
 
 # Future developments
-- [ ] Location for weather and loc
-- [ ] Square support
-- [ ] New Minute Mode: Bezel
-- [ ] Steps
+- [x] Location for weather and loc
+- [x] Square support
+- [x] New Minute Mode: Bezel
+- [x] Steps
+- [ ] More Health Metrics
 
 # Screenshots
-![GIF](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BezelGif.gif)
+![GIF](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BezelPTR.gif)
+![GIF](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BezelPT.gif)
+![GIF](https://raw.githubusercontent.com/dieghernan/Bzel/master/store/BezelBW.gif)
 
 # Attributions
 ## Fonts: 
