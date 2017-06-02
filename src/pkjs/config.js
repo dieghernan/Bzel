@@ -349,7 +349,7 @@ module.exports = [
       },
       {
       "type": "heading",
-      "defaultValue": "version v2.0",
+      "defaultValue": "version v2.1",
       "size":6
       },
       {
