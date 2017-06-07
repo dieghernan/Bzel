@@ -27,20 +27,54 @@ module.exports = [
           },
           {"label":"Bezel",
            "value":"3"            
+          },
+          {"label":"Arc",
+           "value":"4"            
+          },
+          {"label":"Digidot",
+           "value":"5"            
+          },
+          {"label":"Line",
+           "value":"6"            
           }
         ]
+      },
+      {
+        "type": "select",
+        "messageKey": "MinuteMarks",
+        "label": "Minute Marks",
+        "description": "Available for non-digit Clock Modes",
+        "defaultValue": "0",
+        "options": [
+          {
+            "label": "None",
+            "value": "0"
+          },
+          {
+            "label": "All",
+            "value": "1"
+          },
+          {"label":"Previous",
+           "value":"2"            
+          },
+          {"label":"Next",
+           "value":"3"   
+          }         
+        ]        
       },
       {
         "type": "toggle",
         "messageKey": "DisplayDate",
         "label": "Date",
         "defaultValue": false
-      },     
+      },
+      
+      // Color
       {
         "type": "color",
         "messageKey": "BackgroundColor",
         "defaultValue": "0x555555",
-        "label": "Background"
+        "label": "Background",
       },
       {
         "type": "color",
@@ -59,7 +93,8 @@ module.exports = [
         "messageKey": "MinColor",
         "defaultValue": "0x555555",
         "label": "Minute"
-      },    
+      },
+      // End Color      
       {"type": "section",
        "items": [
          {
@@ -67,6 +102,7 @@ module.exports = [
            "defaultValue": "Night Theme",
            "size":4
          } ,
+         // Color
          {
            "type": "toggle",
            "messageKey": "NightTheme",
@@ -97,7 +133,7 @@ module.exports = [
            "messageKey": "MinColorNight",
            "defaultValue": "0xFFFFFF",
            "label": "Minute"
-         }       
+         },        
        ]
       }
     ]
@@ -107,42 +143,69 @@ module.exports = [
     "items": [
       {
         "type": "heading",
-        "defaultValue": "Connection settings"
-      },
-      {
-        "type": "toggle",
-        "messageKey": "DisplayLoc",
-        "label": "Location",
-        "defaultValue": false
-      },
-      {
-        "type": "toggle",
-        "messageKey": "DisplayTemp",
-        "label": "Weather",
-        "defaultValue": false
+        "defaultValue": "Complications"
       },
       {"type": "select",
-       "messageKey": "WeatherLayout",
-       "defaultValue": "1",
-       "label": "Layout",
+       "messageKey": "TopComp",
+       "defaultValue": "0",
+       "label": "Top",
        "options": [
          {
-           "label": "T: Location - B: Weather",
+           "label": "None",
+           "value": "0"
+         },
+         {
+           "label": "Location",
            "value": "1"
          },
          {
-           "label": "T: Weather - B: Location",
+           "label": "Weather",
            "value": "2"
-         },        
-       ]        
          },
+         {
+           "label": "Steps Today",
+           "value": "3"
+         },
+         {
+           "label": "Battery Level",
+           "value": "4"
+         },
+       ]        
+         },    
+         
+         {"type": "select",
+       "messageKey": "BottomComp",
+       "defaultValue": "0",
+       "label": "Bottom",
+       "options": [
+         {
+           "label": "None",
+           "value": "0"
+         },
+         {
+           "label": "Location",
+           "value": "1"
+         },
+         {
+           "label": "Weather",
+           "value": "2"
+         },
+         {
+           "label": "Steps Today",
+           "value": "3"
+         }, 
+         {
+           "label": "Battery Level",
+           "value": "4"
+         },
+       ]        
+         },       
          {
         "type": "toggle",
         "messageKey": "WeatherUnit",
         "label": "Temperature in Fahrenheit",
         "defaultValue": false,
-        "description": "Applicable if Weather toggle is active"
-      },
+         },
       {
         "type": "select",
         "messageKey": "WeatherProv",
@@ -211,7 +274,7 @@ module.exports = [
       },
       {
       "type": "heading",
-      "defaultValue": "version v1.1",
+      "defaultValue": "version v3.0",
       "size":6
       },
       {

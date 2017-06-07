@@ -4,13 +4,14 @@
         "pebble-clay": "^1.0.3"
     },
     "keywords": [],
-    "name": "bzels_beta2",
+    "name": "bzel_fresh",
     "pebble": {
         "capabilities": [
             "location",
-            "configurable"
+            "configurable",
+            "health"
         ],
-        "displayName": "bzels_beta2",
+        "displayName": "bzel_fresh",
         "enableMultiJS": true,
         "messageKeys": [
             "BackgroundColor",
@@ -20,8 +21,6 @@
             "WeatherCond",
             "NameLocation",
             "DisplayDate",
-            "DisplayTemp",
-            "DisplayLoc",
             "UpSlider",
             "NightTheme",
             "BackgroundColorNight",
@@ -37,11 +36,20 @@
             "MinColor",
             "HourColorNight",
             "MinColorNight",
-            "WeatherLayout"
+            "TopComp",
+            "BottomComp",
+            "MinuteMarks"
         ],
         "projectType": "native",
         "resources": {
             "media": [
+                {
+                    "characterRegex": "[a-z]",
+                    "file": "fonts/connsymbol.ttf",
+                    "name": "FONT_SYMBOL_16",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
                 {
                     "file": "images/bzel.png",
                     "menuIcon": true,
@@ -87,13 +95,6 @@
                     "name": "FONT_GBOLD_34",
                     "targetPlatforms": null,
                     "type": "font"
-                },
-                {
-                    "characterRegex": "[a-b]",
-                    "file": "fonts/ConnSymbol.ttf",
-                    "name": "FONT_SYMBOL_16",
-                    "targetPlatforms": null,
-                    "type": "font"
                 }
             ]
         },
@@ -104,10 +105,10 @@
             "chalk",
             "diorite"
         ],
-        "uuid": "7d621aa4-6b60-4921-9c07-bd73a382e9db",
+        "uuid": "a11502e2-92bb-44ca-a17b-8e407a9afba0",
         "watchapp": {
             "watchface": true
         }
     },
-    "version": "2.0.0"
+    "version": "3.0.0"
 }
