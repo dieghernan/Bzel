@@ -36,6 +36,9 @@ module.exports = [
           },
           {"label":"Line",
            "value":"6"            
+          },
+          {"label":"Blocks",
+           "value":"7"            
           }
         ]
       },

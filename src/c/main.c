@@ -140,11 +140,89 @@ static int returnbottom(int selecttop, int selectbottom){
   }
 };
 #if defined (PBL_ROUND)
+static void blockmodeforround(GContext * ctx){
+  graphics_context_set_stroke_width(ctx, 1);
+  for (int i = 0; i < 60; i++){
+    int deg1=-3+6*i;
+    int deg2=deg1+6;
+    GPoint p0=gpoint_from_polar(circle_round, GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(deg1));
+    GPoint p1=gpoint_from_polar(bounds, GOvalScaleModeFillCircle, DEG_TO_TRIGANGLE(deg1));
+    GPoint p2=gpoint_from_polar(circle_round, GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(deg2));
+    GPoint p3=gpoint_from_polar(bounds, GOvalScaleModeFillCircle, DEG_TO_TRIGANGLE(deg2));
+    if (settings.MinuteMarks==0){
+      if (i<=s_minutes){
+        graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor,settings.MinColorNight));
+        graphics_context_set_stroke_color(ctx, ColorSelect(settings.ForegroundColor,settings.ForegroundColorNight));
+      }
+      else {
+        graphics_context_set_fill_color(ctx, ColorSelect(settings.ForegroundColor,settings.ForegroundColorNight));
+        graphics_context_set_stroke_color(ctx, ColorSelect(settings.MinColor,settings.MinColorNight));        
+      }      
+    }
+    else if (settings.MinuteMarks==1){
+      if (i<=s_minutes){
+        if (i<s_minutes && i%5==0 && i>0){
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));        
+        }
+        else {
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        }
+      }
+      else {
+        if (i%5==0 && (i-s_minutes)>1){
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));          
+        }
+        else{
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));              
+        }
+      }
+    }
+    else if (settings.MinuteMarks==2){
+      if (i<=s_minutes){
+        if (i<s_minutes && i%5==0 && i>0){
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));        
+        }
+        else {
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        }
+      }
+      else {
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));          
+      }      
+    }
+    else if (settings.MinuteMarks==3){
+      if (i<=s_minutes){
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+      }
+      else {
+        if (i%5==0 && (i-s_minutes)>1){
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));          
+        }
+        else{
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));              
+        }        
+      }      
+    }
+    graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 33, DEG_TO_TRIGANGLE(deg1), DEG_TO_TRIGANGLE(deg2));
+    graphics_draw_line(ctx, p0, p1);
+    graphics_draw_line(ctx, p2, p3);  
+  }  
+}
 static void mm1_bezel_round(GContext * ctx){
   int minloc=s_minutes/5;
   if (settings.MinuteMarks==1){
     for (int i = 0; i <= minloc; i++){
-      graphics_context_set_stroke_color(ctx, ColorSelect(settings.BackgroundColor,settings.BackgroundColor));
+      graphics_context_set_stroke_color(ctx, ColorSelect(settings.BackgroundColor,settings.BackgroundColorNight));
       graphics_context_set_stroke_width(ctx, 1);
       GPoint p0=gpoint_from_polar(circle_round, GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(i*30));
       GPoint p1=gpoint_from_polar(bounds, GOvalScaleModeFillCircle, DEG_TO_TRIGANGLE(i*30));
@@ -169,7 +247,7 @@ static void mm1_bezel_round(GContext * ctx){
   }
   else if (settings.MinuteMarks==3){
     for (int i = minloc+1; i <= 12; i++){
-      graphics_context_set_stroke_color(ctx, ColorSelect(settings.BackgroundColor,settings.BackgroundColor));
+      graphics_context_set_stroke_color(ctx, ColorSelect(settings.BackgroundColor,settings.BackgroundColorNight));
       graphics_context_set_stroke_width(ctx, 1);
       GPoint p0=gpoint_from_polar(circle_round, GOvalScaleModeFitCircle, DEG_TO_TRIGANGLE(i*30));
       GPoint p1=gpoint_from_polar(bounds, GOvalScaleModeFillCircle, DEG_TO_TRIGANGLE(i*30));
@@ -357,7 +435,7 @@ static void mm1_bezel_square(GContext * ctx){
   int minloc=s_minutes/5;
   if (settings.MinuteMarks==1){
     for (int i = 0; i <= minloc; i++){
-      graphics_context_set_stroke_color(ctx, ColorSelect(settings.BackgroundColor,settings.BackgroundColor));
+      graphics_context_set_stroke_color(ctx, ColorSelect(settings.BackgroundColor,settings.BackgroundColorNight));
       graphics_context_set_stroke_width(ctx, 1);
       GPoint p0=pointref(inner, i*5);
       GPoint p1=pointref(bounds, i*5);
@@ -373,7 +451,7 @@ static void mm1_bezel_square(GContext * ctx){
   }
   else if (settings.MinuteMarks==2){
      for (int i = 0; i <= minloc; i++){
-      graphics_context_set_stroke_color(ctx, ColorSelect(settings.BackgroundColor,settings.BackgroundColor));
+      graphics_context_set_stroke_color(ctx, ColorSelect(settings.BackgroundColor,settings.BackgroundColorNight));
       graphics_context_set_stroke_width(ctx, 1);
       GPoint p0=pointref(inner, i*5);
       GPoint p1=pointref(bounds, i*5);
@@ -387,6 +465,140 @@ static void mm1_bezel_square(GContext * ctx){
       GPoint p0=pointref(inner, i*5);
       GPoint p1=pointref(bounds, i*5);
       graphics_draw_line(ctx, p0, p1);
+    }
+  }
+}
+static void blockmodeforsquare(GContext * ctx){
+  APP_LOG(APP_LOG_LEVEL_DEBUG,"rectref is x %d y %d w %d h %d",bounds.origin.x,bounds.origin.y,bounds.size.w, bounds.size.h);  
+  int steptop=bounds.size.w/16;
+  int stepside=8;
+  graphics_context_set_stroke_width(ctx, 1);
+  APP_LOG(APP_LOG_LEVEL_DEBUG,"Steps are  top %d side %d ",steptop,stepside);
+  for (int i = 0; i <=59; i++){
+    GRect block;
+    if (i==0){
+      block=GRect(bounds.origin.x+7*steptop, bounds.origin.y, steptop*2, 22);      
+    }
+    else if(i<=7) {
+      block=GRect(bounds.origin.x+(i+8)*steptop, bounds.origin.y, steptop, 22);
+    }
+    else if (i<15){
+      block=GRect(bounds.origin.x+bounds.size.w-32, 22+stepside*(i-8), 32, stepside);
+    }
+    else if (i==15){
+      block=GRect(bounds.origin.x+bounds.size.w-32, 22+stepside*(i-8), 32, 12);
+    }
+    else if (i<=22){
+      block=GRect(bounds.origin.x+bounds.size.w-32, 90+stepside*(i-16), 32, stepside);
+    }
+    else if (i<30){
+      block=GRect(bounds.origin.x+bounds.size.w-steptop*(i-22), bounds.origin.y+bounds.size.h, steptop, -22);
+    }
+    else if (i==30){
+      block=GRect(bounds.origin.x+bounds.size.w-steptop*(9), bounds.origin.y+bounds.size.h, steptop*2, -22);
+    }
+    else if(i<=37) {
+       block=GRect(bounds.origin.x+bounds.size.w-steptop*(i-21), bounds.origin.y+bounds.size.h, steptop, -22);
+    }
+    else if (i<45){
+      block=GRect(bounds.origin.x,bounds.origin.y+bounds.size.h-22-stepside*(i-37), 32, stepside);
+    }
+    else if (i==45){
+      block=GRect(bounds.origin.x, 22+stepside*(7), 32, 12);
+    }
+    else if (i<=52){
+      block=GRect(bounds.origin.x, 22+stepside*(52-i), 32, stepside);
+    }
+    else {
+      block=GRect(bounds.origin.x+steptop*(i-53), bounds.origin.y, steptop, 22);
+    }
+    //Rewrite 22
+     if (i==22){
+      block=GRect(bounds.origin.x+bounds.size.w-32, 90+stepside*(i-16), 32, stepside);
+    }    
+    if (settings.MinuteMarks==0){
+      if (i<=s_minutes){
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+      }
+      else {
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+      }
+    }
+    else if (settings.MinuteMarks==1){
+      if (i<=s_minutes){
+        if (i<s_minutes && i%5==0 && i>0){
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));        
+        }
+        else {
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        }
+      }
+      else {
+        if (i%5==0 && (i-s_minutes)>1){
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));          
+        }
+        else{
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));              
+        }
+      }
+    }
+    else if (settings.MinuteMarks==2){
+      if (i<=s_minutes){
+        if (i<s_minutes && i%5==0  && i>0){
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));        
+        }
+        else {
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        }
+      }
+      else {
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));          
+      }      
+    }
+    else if (settings.MinuteMarks==3){
+      if (i<=s_minutes){
+        graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+        graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+      }
+      else {
+        if (i%5==0 && (i-s_minutes)>1){
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));          
+        }
+        else{
+          graphics_context_set_fill_color(ctx,ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+          graphics_context_set_stroke_color(ctx,ColorSelect(settings.MinColor, settings.MinColorNight));              
+        }        
+      }      
+    }
+    GPoint c1=GPoint(block.origin.x, block.origin.y);
+    GPoint c2=GPoint(block.origin.x+block.size.w, block.origin.y);
+    GPoint c3=GPoint(block.origin.x+block.size.w,block.origin.y+block.size.h);    
+    GPoint c4=GPoint(block.origin.x, block.origin.y+block.size.h);
+    graphics_fill_rect(ctx, block, 0, GCornerNone);
+    if (i>= 8 && i<=22){
+      graphics_draw_line(ctx, c1, c2);
+      graphics_draw_line(ctx, c3, c4);
+    }
+    else if (i>=38 && i<=52){
+      graphics_draw_line(ctx, c1, c2);
+      graphics_draw_line(ctx, c3, c4);
+    }
+    else {
+      graphics_draw_line(ctx, c1, c4);
+      graphics_draw_line(ctx, c2, c3);
+    }
+    if (i==22){
+      graphics_draw_line(ctx, c3, c4);
     }
   }
 }
@@ -567,6 +779,9 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
     graphics_context_set_stroke_width(ctx, 4);
     graphics_draw_line(ctx, p0, p1);    
   }
+  else if (settings.ClockMode==7){
+    blockmodeforround(ctx);
+  }
   #else
   int xtodraw=x_min(s_minutes, bounds, 32);
   int ytodraw=y_min(s_minutes, bounds, 22);
@@ -605,11 +820,15 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
   }
   else if (settings.ClockMode==6){
     mm1_all_square(ctx);
-    GPoint dotinner=pointref(inner, s_minutes);
+    GRect fixline=grect_inset(bounds, GEdgeInsets(20,30,20,30));;
+    GPoint dotinner=pointref(fixline, s_minutes);
     GPoint dotoutter=pointref(bounds, s_minutes);
     graphics_context_set_stroke_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
     graphics_context_set_stroke_width(ctx, 4);
     graphics_draw_line(ctx, dotinner, dotoutter);
+  }
+  else if (settings.ClockMode==7){
+    blockmodeforsquare(ctx);
   }
   #endif
   #if defined (PBL_ROUND)
@@ -641,24 +860,35 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
       graphics_context_set_fill_color(ctx, ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
       graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));
     }
+    if (settings.ClockMode==7){
+      if (s_minutes<=18){
+        graphics_context_set_fill_color(ctx, ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        graphics_context_set_text_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));        
+      }
+      else {
+        graphics_context_set_text_color(ctx, ColorSelect(settings.ForegroundColor, settings.ForegroundColorNight));
+        graphics_context_set_fill_color(ctx, ColorSelect(settings.MinColor, settings.MinColorNight));        
+      }
+    }
+    
     char datenow[44];
     const char * sys_locale = i18n_get_system_locale();
     fetchwday(s_weekday, sys_locale, datenow);
     char convertday[4];
     snprintf(convertday, sizeof(convertday), " %02d", s_day);
     strcat(datenow, convertday);
-    GRect date_rect_right=GRect(inner.origin.x+inner.size.w+1, hour_rect.origin.y+8, 31, 30);
-    GRect date_rect_left=GRect(inner.origin.x-date_rect_right.size.w-1, date_rect_right.origin.y,
+    GRect date_rect_right=GRect(inner.origin.x+inner.size.w, hour_rect.origin.y+8, 32, 30);
+    GRect date_rect_left=GRect(inner.origin.x-date_rect_right.size.w, date_rect_right.origin.y,
                                date_rect_right.size.w, date_rect_right.size.h);
     
     
     if (s_minutes>12 && s_minutes<18){
       graphics_fill_rect(ctx, date_rect_left, 0, GCornerNone);
-      graphics_draw_text(ctx, datenow, FontDate, date_rect_left, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
+      graphics_draw_text(ctx, datenow, FontDate, date_rect_left, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
     }
     else {
       graphics_fill_rect(ctx, date_rect_right, 0, GCornerNone);
-      graphics_draw_text(ctx, datenow, FontDate, date_rect_right, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+      graphics_draw_text(ctx, datenow, FontDate, date_rect_right, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
     }
   }
   #endif
@@ -691,7 +921,7 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
   condrect_alt=GRect(condrect.origin.x, temprect_alt.origin.y, condrect.size.w, condrect.size.h);
   iconstep_alt=GRect(loc_rect_alt.origin.x, loc_rect_alt.origin.y, 20, loc_rect_alt.size.h);
   numstep_alt=GRect(iconstep_alt.origin.x+iconstep_alt.size.w,iconstep_alt.origin.y,loc_rect_alt.size.w-iconstep_alt.size.w,iconstep_alt.size.h);
-  #endif
+  #endif  
   //Settings by Default
   graphics_context_set_text_color(ctx, ColorSelect(settings.HourColor, settings.HourColorNight));
   // Store batt
