@@ -1270,7 +1270,7 @@ static void init(){
   s_weekday=t->tm_wday;
   //Register and open
   app_message_register_inbox_received(prv_inbox_received_handler);
-  app_message_open(128, 128);
+  app_message_open(256 , 256);
   // Load Fonts
   FontHour = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GBOLD_34));
   FontMinute = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GBOLD_18));
