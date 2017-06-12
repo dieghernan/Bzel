@@ -37,18 +37,12 @@
             "HourColorNight",
             "MinColorNight",
             "TopComp",
-            "BottomComp"
+            "BottomComp",
+            "MinuteMarks"
         ],
         "projectType": "native",
         "resources": {
             "media": [
-                {
-                    "characterRegex": "[a-z]",
-                    "file": "fonts/ConnSymbol_2.ttf",
-                    "name": "FONT_SYMBOL_16",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
                 {
                     "file": "images/bzel.png",
                     "menuIcon": true,
@@ -59,6 +53,13 @@
                 {
                     "file": "fonts/weatherfontcustom2.ttf",
                     "name": "FONT_WICON_22",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[a-z]",
+                    "file": "fonts/connsymbol.ttf",
+                    "name": "FONT_SYMBOL_16",
                     "targetPlatforms": null,
                     "type": "font"
                 },
@@ -109,5 +110,5 @@
             "watchface": true
         }
     },
-    "version": "2.1.0"
+    "version": "3.0.0"
 }

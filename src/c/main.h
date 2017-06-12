@@ -19,6 +19,7 @@ typedef struct ClaySettings {
   int ClockMode;
   int TopComp;
   int BottomComp;
+  int MinuteMarks;
   char* WeatherTemp;
   bool DisplayDate;
   bool DisplayTemp;
