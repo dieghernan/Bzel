@@ -64,9 +64,8 @@
                     "type": "font"
                 },
                 {
-                    "characterRegex": "[0-9 a-z A-Z]",
                     "file": "fonts/Gotham Light.otf",
-                    "name": "FONT_GLIGHT_12",
+                    "name": "FONT_GLIGHT_10",
                     "targetPlatforms": null,
                     "type": "font"
                 },
@@ -77,15 +76,9 @@
                     "type": "font"
                 },
                 {
+                    "characterRegex": "[0-9 a-z A-Z]",
                     "file": "fonts/Gotham Light.otf",
-                    "name": "FONT_GLIGHT_10",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[0-9:]",
-                    "file": "fonts/Gotham Bold.otf",
-                    "name": "FONT_GBOLD_34",
+                    "name": "FONT_GLIGHT_12",
                     "targetPlatforms": null,
                     "type": "font"
                 },
@@ -93,6 +86,13 @@
                     "characterRegex": "[0-9:]",
                     "file": "fonts/Gotham Bold.otf",
                     "name": "FONT_GBOLD_18",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[0-9:]",
+                    "file": "fonts/Gotham Bold.otf",
+                    "name": "FONT_GBOLD_34",
                     "targetPlatforms": null,
                     "type": "font"
                 }
@@ -110,5 +110,5 @@
             "watchface": true
         }
     },
-    "version": "3.1.0"
+    "version": "3.2.0"
 }
