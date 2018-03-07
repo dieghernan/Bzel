@@ -67,22 +67,21 @@ Autotranslating of weekday supported for:
 [Master Key](https://www.pmkey.xyz) is a service for Pebble users. Get a unique PIN and add API Keys for your favorite online services. Please check [www.pmkey.xyz](https://www.pmkey.xyz) for more info.
 
 # Do you ❤️ this watchface? There are more!
-
 <table align="center">
   <tr valign="middle">
-        <td align="center"><a href="https://dieghernan.github.io/TextWatchClima/"><img src="https://dieghernan.github.io/TextWatchClima/store/BannerRound.png" width="120" ></a></td>
-      <td align="left" valign="middle"><b>TextWatchClima</b> Several languages supported. Includes weather info</td>
-      <td align="center" valign="middle"><a href="https://apps.getpebble.com/en_US/application/58a94da90dfc32d35b0002f8">Download</a></td>
-    </tr>
-        <tr valign="middle">
-        <td align="center"><a href="https://dieghernan.github.io/7egment/"><img src="https://raw.githubusercontent.com/dieghernan/7egment/master/store/Banner.png" width="120" ></a></td>
-      <td align="left" valign="middle"><b>7egment</b> Retro inspired watchface</td>
-      <td align="center" valign="middle"><a href="https://apps.getpebble.com/applications/591ead370dfc32aacf000204">Download</a></td>
-    </tr>
-    <tr valign="middle">
-        <td align="center"><a href="https://dieghernan.github.io/Sfera/"><img src="https://raw.githubusercontent.com/dieghernan/Sfera/master/assets/SferaBanner.png" width="120" ></a></td>
-      <td align="left" valign="middle"><b>Sfera</b> Clean time and weather watchface (Pebble Time Round only)</td>
-      <td align="center" valign="middle"><a href="https://apps.getpebble.com/applications/58c2f7110dfc32a52a00081f">Download</a></td>
+    <td align="center"><a href="https://dieghernan.github.io/TextWatchClima/"><img src="https://dieghernan.github.io/TextWatchClima/store/BannerRound.png" width="120" ></a></td>
+    <td align="left" valign="middle"><b>TextWatchClima</b> Several languages supported. Includes weather info</td>
+    <td align="center" valign="middle"><a href="https://apps.getpebble.com/en_US/application/58a94da90dfc32d35b0002f8">Download</a></td>
+  </tr>
+  <tr valign="middle">
+    <td align="center"><a href="https://dieghernan.github.io/7egment/"><img src="https://raw.githubusercontent.com/dieghernan/7egment/master/store/Banner.png" width="120" ></a></td>
+    <td align="left" valign="middle"><b>7egment</b> Retro inspired watchface</td>
+    <td align="center" valign="middle"><a href="https://apps.getpebble.com/applications/591ead370dfc32aacf000204">Download</a></td>
+  </tr>
+  <tr valign="middle">
+    <td align="center"><a href="https://dieghernan.github.io/Sfera/"><img src="https://raw.githubusercontent.com/dieghernan/Sfera/master/assets/SferaBanner.png" width="120" ></a></td>
+    <td align="left" valign="middle"><b>Sfera</b> Clean time and weather watchface (Pebble Time Round only)</td>
+    <td align="center" valign="middle"><a href="https://apps.getpebble.com/applications/58c2f7110dfc32a52a00081f">Download</a></td>
   </tr>
   
 # License
