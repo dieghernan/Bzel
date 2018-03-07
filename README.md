@@ -70,7 +70,7 @@ Autotranslating of weekday supported for:
 <table align="center">
   <tr valign="middle">
     <td align="center"><a href="https://dieghernan.github.io/TextWatchClima/"><img src="https://dieghernan.github.io/TextWatchClima/store/BannerRound.png" width="120" ></a></td>
-    <td align="left" valign="middle"><b>TextWatchClima</b> Several languages supported. Includes weather info</td>
+    <td align="left" valign="middle"><b>TextWatchClima</b> Several languages supported</td>
     <td align="center" valign="middle"><a href="https://apps.getpebble.com/en_US/application/58a94da90dfc32d35b0002f8">Download</a></td>
   </tr>
   <tr valign="middle">
@@ -80,7 +80,7 @@ Autotranslating of weekday supported for:
   </tr>
   <tr valign="middle">
     <td align="center"><a href="https://dieghernan.github.io/Sfera/"><img src="https://raw.githubusercontent.com/dieghernan/Sfera/master/assets/SferaBanner.png" width="120" ></a></td>
-    <td align="left" valign="middle"><b>Sfera</b> Clean time and weather watchface (Pebble Time Round only)</td>
+    <td align="left" valign="middle"><b>Sfera</b> Clean watchface (PTR only)</td>
     <td align="center" valign="middle"><a href="https://apps.getpebble.com/applications/58c2f7110dfc32a52a00081f">Download</a></td>
   </tr>
 </table>
