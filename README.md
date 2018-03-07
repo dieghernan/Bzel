@@ -83,7 +83,8 @@ Autotranslating of weekday supported for:
     <td align="left" valign="middle"><b>Sfera</b> Clean time and weather watchface (Pebble Time Round only)</td>
     <td align="center" valign="middle"><a href="https://apps.getpebble.com/applications/58c2f7110dfc32a52a00081f">Download</a></td>
   </tr>
-  
+</table>
+
 # License
 Developed under license [MIT](https://raw.githubusercontent.com/dieghernan/Bzel/master/LICENSE).
 
